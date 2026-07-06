@@ -137,7 +137,7 @@
       mood: { addiction: 0, stable: 0, anxiety: 0, diligent: 0 },
       moodCards: [],
       cycleResolved: false,
-      story: { bookmark: null, node: null },
+      story: { bookmark: null, node: null, cycleStartSave: null },
       flags: {
         intro_done: false,
         gamble_opened: false,
@@ -827,6 +827,7 @@
       withdraw: "\u53D6\u51FA",
       workStart: "\u5F00\u59CB\u7EF4\u62A4",
       memoSave: "\u4FDD\u5B58",
+      menu: "\u8FD4\u56DE\u4E3B\u83DC\u5355",
       restart: "\u91CD\u65B0\u5F00\u59CB",
       muteOn: "\u{1F50A}",
       muteOff: "\u{1F507}"
@@ -1675,6 +1676,9 @@
     if (!COPY.cycles[state2.cycle]) return;
     state2.cycleResolved = false;
     state2.flags.card_picked = null;
+    state2.story.bookmark = null;
+    state2.story.cycleStartSave = createCycleStartSave();
+    uiCallbacks.persistCycleStartSave?.(state2.story.cycleStartSave);
     uiCallbacks.openWindow("cards");
     uiCallbacks.renderCardTable(getCycleCards(), null);
     if (cycleOpening?.length) {
@@ -2332,6 +2336,7 @@
     });
     setEnding(endingId);
     saveLastEnding(endingId);
+    uiCallbacks.clearSavedRun?.();
     uiCallbacks.showEndingScreen(endingId, COPY.endings[endingId]);
   }
   function appendMessages(channel, messages) {
@@ -2357,6 +2362,7 @@
     const snapshot = exportState();
     if (snapshot.story) {
       snapshot.story.bookmark = null;
+      snapshot.story.cycleStartSave = null;
     }
     state2.story.bookmark = {
       id,
@@ -2375,6 +2381,10 @@
     ]);
     if (pick === "rewind") {
       await rewindToBookmark(rewindBookmark);
+      return;
+    }
+    if (pick === "menu") {
+      location.reload();
       return;
     }
     if (pick === "continue" && canContinueCycle) {
@@ -2579,6 +2589,16 @@
   }
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+  function createCycleStartSave() {
+    const snapshot = exportState();
+    snapshot.cycleResolved = false;
+    snapshot.flags.card_picked = null;
+    if (snapshot.story) {
+      snapshot.story.bookmark = null;
+      snapshot.story.cycleStartSave = null;
+    }
+    return snapshot;
   }
 
   // js/ui.js
@@ -3163,11 +3183,17 @@
         <span>${stats.virtual} <strong>\xA5${s.virtualBalance}</strong></span>
         <span>${stats.debt} <strong>\xA5${Math.round(getDebt())}</strong></span>
       </div>
-      <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+      <div class="ending-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+        <button type="button" class="btn btn-ghost" id="btn-menu">${COPY.buttons.menu}</button>
+      </div>
     </div>
   `;
     layer.querySelector("#btn-restart")?.addEventListener("click", () => {
       localStorage.removeItem("biean_save");
+      location.reload();
+    });
+    layer.querySelector("#btn-menu")?.addEventListener("click", () => {
       location.reload();
     });
   }
@@ -3247,6 +3273,8 @@
       showFinalDecision,
       getWorkArea: () => document.getElementById("work-area"),
       notify: showNotification,
+      persistCycleStartSave,
+      clearSavedRun,
       onCycleComplete: () => {
         play("dayEnd");
       }
@@ -3296,8 +3324,16 @@
   }
   function saveGame() {
     try {
-      if (getState().phase === "playing") {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(exportState()));
+      if (getState().phase === "playing" && getState().story?.cycleStartSave) {
+        persistCycleStartSave(getState().story.cycleStartSave);
+      }
+    } catch {
+    }
+  }
+  function persistCycleStartSave(snapshot = getState().story?.cycleStartSave) {
+    try {
+      if (snapshot) {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
       }
     } catch {
     }

@@ -574,6 +574,7 @@ export const COPY = {
     withdraw: '取出',
     workStart: '开始维护',
     memoSave: '保存',
+    menu: '返回主菜单',
     restart: '重新开始',
     muteOn: '🔊',
     muteOff: '🔇',

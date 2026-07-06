@@ -69,6 +69,8 @@ function boot() {
     showFinalDecision,
     getWorkArea: () => document.getElementById('work-area'),
     notify: showNotification,
+    persistCycleStartSave,
+    clearSavedRun,
     onCycleComplete: () => {
       play('dayEnd');
     },
@@ -123,8 +125,16 @@ function tryLoadSave() {
 
 function saveGame() {
   try {
-    if (getState().phase === 'playing') {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(exportState()));
+    if (getState().phase === 'playing' && getState().story?.cycleStartSave) {
+      persistCycleStartSave(getState().story.cycleStartSave);
+    }
+  } catch { /* ignore */ }
+}
+
+function persistCycleStartSave(snapshot = getState().story?.cycleStartSave) {
+  try {
+    if (snapshot) {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
     }
   } catch { /* ignore */ }
 }

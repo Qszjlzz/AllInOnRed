@@ -664,11 +664,17 @@ export function showEndingScreen(endingId, endingCopy) {
         <span>${stats.virtual} <strong>¥${s.virtualBalance}</strong></span>
         <span>${stats.debt} <strong>¥${Math.round(getDebt())}</strong></span>
       </div>
-      <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+      <div class="ending-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+        <button type="button" class="btn btn-ghost" id="btn-menu">${COPY.buttons.menu}</button>
+      </div>
     </div>
   `;
   layer.querySelector('#btn-restart')?.addEventListener('click', () => {
     localStorage.removeItem('biean_save');
+    location.reload();
+  });
+  layer.querySelector('#btn-menu')?.addEventListener('click', () => {
     location.reload();
   });
 }

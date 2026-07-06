@@ -53,6 +53,9 @@ export async function beginCycle() {
 
   state.cycleResolved = false;
   state.flags.card_picked = null;
+  state.story.bookmark = null;
+  state.story.cycleStartSave = createCycleStartSave();
+  uiCallbacks.persistCycleStartSave?.(state.story.cycleStartSave);
 
   uiCallbacks.openWindow('cards');
   uiCallbacks.renderCardTable(getCycleCards(), null);
@@ -817,6 +820,7 @@ async function launchFinalDecision() {
 
   setEnding(endingId);
   saveLastEnding(endingId);
+  uiCallbacks.clearSavedRun?.();
   uiCallbacks.showEndingScreen(endingId, COPY.endings[endingId]);
 }
 
@@ -846,6 +850,7 @@ function saveBookmark(id) {
   const snapshot = exportState();
   if (snapshot.story) {
     snapshot.story.bookmark = null;
+    snapshot.story.cycleStartSave = null;
   }
   state.story.bookmark = {
     id,
@@ -869,6 +874,11 @@ async function showEarlyEnding(endingKey, rewindBookmark, canContinueCycle = fal
 
   if (pick === 'rewind') {
     await rewindToBookmark(rewindBookmark);
+    return;
+  }
+
+  if (pick === 'menu') {
+    location.reload();
     return;
   }
 
@@ -1110,6 +1120,17 @@ export function advanceCycleManually() {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function createCycleStartSave() {
+  const snapshot = exportState();
+  snapshot.cycleResolved = false;
+  snapshot.flags.card_picked = null;
+  if (snapshot.story) {
+    snapshot.story.bookmark = null;
+    snapshot.story.cycleStartSave = null;
+  }
+  return snapshot;
 }
 
 export { gamble, depositToMachine, withdrawFromMachine, startWorkQTE };
