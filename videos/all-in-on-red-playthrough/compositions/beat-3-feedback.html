@@ -1,0 +1,178 @@
+<template id="beat-3-feedback-template">
+  <div
+    id="beat-3-root"
+    data-composition-id="beat-3-feedback"
+    data-width="1280"
+    data-height="720"
+    data-start="0"
+    data-duration="10.50"
+  >
+    <div class="beat-shell beat-3">
+      <div class="danger-ribbon">一次按下去，所有后果都会被看见。</div>
+      <div class="stat-board">
+        <div class="board-title">即时反馈</div>
+        <div class="chip chip-good">机器 <strong>+¥50</strong></div>
+        <div class="chip chip-good">待还 <strong>-¥25</strong></div>
+        <div class="chip chip-bad">心情 <strong>上瘾 +1</strong></div>
+      </div>
+      <div class="focus-card">真正好用的不是“赢了”。而是它把上头拆成了可见的数字。</div>
+
+      <div class="caption-group" id="cap-0">它不会只告诉你输赢。</div>
+      <div class="caption-group" id="cap-1">现金、机器余额、待还账单，会立刻跳出来，让上头这件事一下变得特别具体。</div>
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "YaHeiLocal";
+        src: local("Microsoft YaHei");
+      }
+
+      #beat-3-root {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        font-family: "YaHeiLocal", sans-serif;
+        color: #e8e0f0;
+      }
+
+      .beat-shell {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .danger-ribbon {
+        position: absolute;
+        left: 46px;
+        top: 38px;
+        padding: 14px 18px;
+        border: 2px solid rgba(255, 68, 102, 0.9);
+        background: rgba(36, 12, 22, 0.88);
+        color: #ff4466;
+        font-size: 26px;
+        font-weight: 700;
+        z-index: 3;
+      }
+
+      .stat-board {
+        position: absolute;
+        right: 44px;
+        top: 44px;
+        width: 346px;
+        padding: 18px;
+        box-sizing: border-box;
+        border: 2px solid rgba(110, 198, 255, 0.55);
+        background: rgba(30, 24, 48, 0.88);
+        box-shadow: rgba(0, 0, 0, 0.45) 8px 8px 0 0;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .board-title {
+        color: #6ec6ff;
+        font-size: 22px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .chip {
+        padding: 16px 18px;
+        border: 2px solid rgba(106, 90, 138, 0.9);
+        background: rgba(45, 38, 64, 0.86);
+        font-size: 26px;
+        line-height: 1.35;
+      }
+
+      .chip strong {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .chip-good {
+        border-color: rgba(93, 255, 143, 0.92);
+        color: #dfffe8;
+      }
+
+      .chip-bad {
+        border-color: rgba(255, 68, 102, 0.92);
+        color: #ffd6de;
+      }
+
+      .focus-card {
+        position: absolute;
+        left: 48px;
+        top: 104px;
+        width: 420px;
+        padding: 20px 22px;
+        border: 2px solid rgba(255, 204, 68, 0.88);
+        background: rgba(18, 14, 28, 0.82);
+        color: #ffcc44;
+        font-size: 28px;
+        line-height: 1.48;
+        z-index: 3;
+      }
+
+      .caption-group {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        bottom: 44px;
+        min-height: 96px;
+        padding: 22px 28px;
+        box-sizing: border-box;
+        border: 2px solid rgba(200, 120, 48, 0.92);
+        background: rgba(18, 14, 28, 0.84);
+        color: #ffffff;
+        font-size: 36px;
+        line-height: 1.45;
+        font-weight: 700;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 4;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var beatDuration = 10.5;
+
+      tl.fromTo(".danger-ribbon", { y: -24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.36, ease: "power2.out" }, 0.26);
+      tl.fromTo(".focus-card", { x: -42, opacity: 0 }, { x: 0, opacity: 1, duration: 0.48, ease: "power3.out" }, 0.42);
+      tl.fromTo(".stat-board", { x: 58, opacity: 0 }, { x: 0, opacity: 1, duration: 0.48, ease: "expo.out" }, 0.56);
+
+      tl.to(".chip-good strong", {
+        textShadow: "0 0 18px rgba(93, 255, 143, 0.35)",
+        yoyo: true,
+        repeat: Math.max(0, Math.floor(beatDuration / 1.5) - 1),
+        duration: 0.75,
+        ease: "sine.inOut"
+      }, 0.95);
+
+      tl.to(".chip-bad strong", {
+        textShadow: "0 0 18px rgba(255, 68, 102, 0.28)",
+        yoyo: true,
+        repeat: Math.max(0, Math.floor(beatDuration / 1.8) - 1),
+        duration: 0.9,
+        ease: "sine.inOut"
+      }, 1.2);
+
+      var captions = [
+        { id: "#cap-0", start: 0.0, end: 2.55 },
+        { id: "#cap-1", start: 2.55, end: 10.50 }
+      ];
+
+      captions.forEach(function (cap) {
+        tl.set(cap.id, { visibility: "visible" }, cap.start);
+        tl.fromTo(cap.id, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.36, ease: "power3.out" }, cap.start);
+        tl.to(cap.id, { opacity: 0, y: -12, duration: 0.14, ease: "power2.in" }, Math.max(cap.start + 0.7, cap.end - 0.14));
+        tl.set(cap.id, { opacity: 0, visibility: "hidden" }, cap.end);
+      });
+
+      window.__timelines["beat-3-feedback"] = tl;
+    </script>
+  </div>
+</template>

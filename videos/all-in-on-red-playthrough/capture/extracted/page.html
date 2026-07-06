@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<style>@font-face {
+  font-family: 'Press Start 2P';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/e3t4euO8T-267oIAQAu6jDQyK0nS.ttf) format('truetype');
+}
+</style>
+
+</head>
+<body>
+
+  <div id="desktop">
+    <!-- ART: assets/pixel/desktop-bg.png -->
+    <div id="wallpaper" aria-hidden="true"></div>
+
+    <header id="hud">
+      <div class="hud-left">
+        <img class="hud-logo pixel-border" src="http://127.0.0.1:4174/assets/pixel/game-icon.png" alt="" onerror="this.style.display='none'">
+        <div class="hud-brand">
+          <span class="hud-title">红键梭哈</span>
+          <span class="hud-title-en">All In on Red</span>
+        </div>
+        <span id="hud-cycle">周期 1 / 5</span>
+      </div>
+      <div class="hud-stats">
+        <span>行动 <strong id="hud-ap">3 / 3</strong></span>
+        <span>现金 <strong id="hud-cash">¥1035</strong></span>
+        <span>机器 <strong id="hud-virtual">¥0</strong></span>
+        <span>账单 <strong id="hud-debt">¥2428 / ¥3463</strong></span>
+        <span id="hud-press">按键 0 次</span>
+      </div>
+      <div class="bill-bar pixel-border" aria-label="账单进度">
+        <div id="bill-bar-fill" style="width: 29.8874%;"></div>
+      </div>
+      <div class="hud-mood">
+        <span class="mood addiction" title="上瘾">瘾 <em id="hud-addiction">0</em></span>
+        <span class="mood stable" title="踏实">踏 <em id="hud-stable">0</em></span>
+        <span class="mood anxiety" title="不安">安 <em id="hud-anxiety">0</em></span>
+        <span class="mood diligent" title="勤勉">勤 <em id="hud-diligent">0</em></span>
+      </div>
+      <div id="mood-cards" class="mood-tray" aria-label="收集的心情牌"></div>
+      <button type="button" id="btn-end-cycle" class="btn btn-ghost btn-sm">结束本周期 →</button>
+      <button type="button" id="btn-mute" class="btn btn-ghost btn-sm btn-mute" title="静音" aria-pressed="false">🔊</button>
+    </header>
+
+    <div id="notifications" aria-live="polite"></div>
+
+    <div id="windows-container">
+      <!-- 卡牌牌桌 — 主游戏区 -->
+      <div class="window pixel-window hidden" data-id="cards" style="left:40px;top:72px;width:520px;height:380px;">
+        <div class="title-bar">
+          <span class="title">🃏 事件牌桌</span>
+          <div class="window-controls">
+            <button type="button" class="btn-minimize">—</button>
+            <button type="button" class="btn-close">×</button>
+          </div>
+        </div>
+        <div class="content card-table-content">
+          <p class="slot-hint">每周期 3 张事件牌 · 行动格只能放 1 张</p>
+          <div id="card-pool" class="card-pool"></div>
+          <div class="action-row">
+            <div id="action-slot" class="action-slot pixel-border">
+              <span class="slot-label">行动格</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 聊天 -->
+      <div class="window pixel-window hidden" data-id="chat" style="left:100px;top:110px;width:360px;height:340px;">
+        <div class="title-bar">
+          <span class="title">💬 阿凯</span>
+          <div class="window-controls">
+            <button type="button" class="btn-minimize">—</button>
+            <button type="button" class="btn-close">×</button>
+          </div>
+        </div>
+        <div class="content chat-content">
+          <div id="chat-messages" class="chat-messages"></div>
+        </div>
+      </div>
+
+      <!-- 工作 -->
+      <div class="window pixel-window hidden" data-id="work" style="left:140px;top:90px;width:400px;height:400px;">
+        <div class="title-bar">
+          <span class="title">💼 加班维护</span>
+          <div class="window-controls">
+            <button type="button" class="btn-minimize">—</button>
+            <button type="button" class="btn-close">×</button>
+          </div>
+        </div>
+        <div class="content chat-content">
+          <div id="work-messages" class="chat-messages" style="max-height:80px;"></div>
+          <div id="work-area"></div>
+          <button type="button" id="btn-work-start" class="btn btn-primary">开始维护</button>
+        </div>
+      </div>
+
+      <!-- 赌博 -->
+      <div class="window pixel-window hidden" data-id="gamble" style="left:180px;top:70px;width:440px;height:460px;">
+        <div class="title-bar">
+          <span class="title">🌐 别按那个键.html</span>
+          <div class="window-controls">
+            <button type="button" class="btn-minimize">—</button>
+            <button type="button" class="btn-close">×</button>
+          </div>
+        </div>
+        <div class="content gamble-content">
+          <p class="gamble-warn">中间只有一个按钮。</p>
+          <div class="gamble-center">
+            <button type="button" id="btn-gamble-once" class="gamble-btn pixel-btn-red">按</button>
+            <button type="button" id="btn-triple" class="btn btn-danger hidden">三连按</button>
+            <button type="button" id="btn-ten" class="btn btn-danger hidden">十连按</button>
+          </div>
+          <div id="gamble-story-prompt" class="gamble-story-prompt hidden"></div>
+          <div id="wheel-display" class="wheel-display pixel-border">—</div>
+          <div id="gamble-impact" class="gamble-impact hidden"></div>
+          <div class="gamble-actions">
+            <button type="button" id="btn-deposit-all" class="btn btn-ghost btn-sm">存入机器</button>
+            <button type="button" id="btn-withdraw" class="btn btn-ghost btn-sm">取出</button>
+          </div>
+          <div id="gamble-log" class="gamble-log"></div>
+        </div>
+      </div>
+
+      <!-- 家庭群 -->
+      <div class="window pixel-window hidden" data-id="family" style="left:460px;top:130px;width:360px;height:360px;">
+        <div class="title-bar">
+          <span class="title">👨‍👩‍👧 家庭群</span>
+          <div class="window-controls">
+            <button type="button" class="btn-minimize">—</button>
+            <button type="button" class="btn-close">×</button>
+          </div>
+        </div>
+        <div class="content chat-content">
+          <div id="family-messages" class="chat-messages"></div>
+        </div>
+      </div>
+    </div>
+
+    <footer id="taskbar">
+      <div class="taskbar-apps">
+        <button type="button" class="taskbar-app active" data-app="cards" title="牌桌" aria-label="牌桌">
+          <img src="http://127.0.0.1:4174/assets/pixel/icon-cards.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+          <span class="taskbar-fallback" hidden="">🃏</span>
+        </button>
+        <button type="button" class="taskbar-app" data-app="chat" title="聊天" aria-label="聊天">
+          <img src="http://127.0.0.1:4174/assets/pixel/icon-chat.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+          <span class="taskbar-fallback" hidden="">💬</span>
+        </button>
+        <button type="button" class="taskbar-app" data-app="work" title="工作" aria-label="工作">
+          <img src="http://127.0.0.1:4174/assets/pixel/icon-work.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+          <span class="taskbar-fallback" hidden="">💼</span>
+        </button>
+        <button type="button" class="taskbar-app" data-app="gamble" title="红键梭哈" aria-label="红键梭哈">
+          <img src="http://127.0.0.1:4174/assets/pixel/game-icon.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+          <span class="taskbar-fallback" hidden="">🎲</span>
+        </button>
+        <button type="button" class="taskbar-app" data-app="family" title="家庭" aria-label="家庭">
+          <img src="http://127.0.0.1:4174/assets/pixel/icon-family.png" alt="" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">
+          <span class="taskbar-fallback" hidden="">👨‍👩‍👧</span>
+        </button>
+      </div>
+      <div id="clock" class="taskbar-clock">13:52</div>
+    </footer>
+
+    <!-- 底部剧情框 — 橙光/AI 对话风格 -->
+    <aside id="narrative-panel" class="pixel-border">
+      <div class="narrative-header">▸ 剧情</div>
+      <div id="narrative-text" class="narrative-text"></div>
+      <div id="narrative-choices" class="narrative-choices"></div>
+    </aside>
+
+    <div id="modal-layer" class="overlay" style="display: none;">
+    <div class="modal intro-screen cover-screen">
+      <div class="cover-hero">
+        <div class="intro-brand">
+          <img class="intro-icon pixel-border" src="http://127.0.0.1:4174/assets/pixel/game-icon.png" alt="" onerror="this.style.display='none'">
+          <h1>红键梭哈</h1>
+          <p class="intro-title-en">All In on Red</p>
+          <p class="intro-tagline">别按那个键</p>
+        </div>
+        <div class="cover-copy">
+          <p class="subtitle">像素桌面叙事 · 在诱惑、债务与归家之间，别把人生押给那颗红键</p>
+          <div class="intro-body">
+            <p>《红键梭哈 / All In on Red》是一款像素桌面叙事游戏。深夜的办公室里，你收到一个名为“别按那个键.html”的链接，屏幕中央只有一颗发亮的红按钮。</p>
+            <p>接下来的五个周期里，工作、家人、账单和欲望会不断把你拉向不同方向。你可以赚钱、还债、回消息，也可以一次次把手伸向那颗按钮。</p>
+            <p>每一次按下，赢的不是安全，输掉的也不只是钱。当按钮比回家更近的时候，你还能不能在彻底沉下去之前停住？</p>
+          </div>
+        </div>
+      </div>
+      <div class="intro-actions">
+        
+        <div class="intro-menu">
+          <button type="button" class="btn btn-primary" id="btn-start">开始游戏</button>
+        </div>
+        <p class="intro-hint">点击开始后进入桌面</p>
+      </div>
+    </div>
+  </div>
+    <div id="ending-layer" class="overlay hidden"></div>
+  </div>
+
+  <script src="js/game.bundle.js" defer=""></script>
+
+
+
+</body>
+</html>

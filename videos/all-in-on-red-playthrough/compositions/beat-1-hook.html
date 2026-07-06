@@ -1,0 +1,196 @@
+<template id="beat-1-hook-template">
+  <div
+    id="beat-1-root"
+    data-composition-id="beat-1-hook"
+    data-width="1280"
+    data-height="720"
+    data-start="0"
+    data-duration="9.98"
+  >
+    <div class="beat-shell beat-1">
+      <div class="backdrop"></div>
+      <div class="video-frame"></div>
+      <div class="top-copy">
+        <div class="eyebrow">试玩录像 / Playthrough</div>
+        <h1 class="title">红键梭哈</h1>
+        <p class="title-en">All In on Red</p>
+        <div class="theme-chip">别按那个键</div>
+      </div>
+      <div class="mood-note">
+        深夜办公室、像素桌面、一个会把人越拉越近的红按钮。
+      </div>
+
+      <div class="caption-group" id="cap-0">你以为这只是个别按下去的小游戏。</div>
+      <div class="caption-group" id="cap-1">真正危险的，是它会让你一边加班，一边开始替那颗红键找理由。</div>
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "PressStartLocal";
+        src: url("capture/assets/fonts/e3t4euO8T-267oIAQAu6jDQyK0nS.ttf") format("truetype");
+      }
+
+      @font-face {
+        font-family: "YaHeiLocal";
+        src: local("Microsoft YaHei");
+      }
+
+      #beat-1-root {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        font-family: "YaHeiLocal", sans-serif;
+        color: #e8e0f0;
+      }
+
+      .beat-shell {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .backdrop {
+        position: absolute;
+        inset: -24px;
+        background-image:
+          linear-gradient(180deg, rgba(18, 14, 28, 0.18), rgba(18, 14, 28, 0.42)),
+          url("capture/screenshots/scroll-000.png");
+        background-size: cover;
+        background-position: center;
+        filter: blur(12px) saturate(0.88);
+        opacity: 0.72;
+        z-index: 0;
+        transform-origin: center;
+      }
+
+      .video-frame {
+        position: absolute;
+        inset: 26px;
+        border: 2px solid rgba(110, 198, 255, 0.25);
+        box-shadow: rgba(0, 0, 0, 0.45) 12px 12px 0 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .top-copy {
+        position: absolute;
+        left: 48px;
+        top: 42px;
+        width: 420px;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .eyebrow {
+        align-self: flex-start;
+        padding: 8px 12px;
+        border: 2px solid #6a5a8a;
+        background: rgba(45, 38, 64, 0.88);
+        color: #ffcc44;
+        font-size: 18px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .title {
+        margin: 0;
+        font-family: "PressStartLocal", monospace;
+        font-size: 68px;
+        line-height: 1.05;
+        color: #6ec6ff;
+        text-shadow: rgba(0, 0, 0, 0.55) 6px 6px 0;
+      }
+
+      .title-en {
+        margin: 0;
+        font-size: 28px;
+        letter-spacing: 0.08em;
+        color: #e8e0f0;
+      }
+
+      .theme-chip {
+        align-self: flex-start;
+        padding: 12px 18px;
+        border: 2px solid rgba(255, 68, 102, 0.8);
+        background: rgba(36, 12, 22, 0.82);
+        color: #ff4466;
+        font-size: 26px;
+        font-weight: 700;
+        box-shadow: 0 0 24px rgba(255, 68, 102, 0.15);
+      }
+
+      .mood-note {
+        position: absolute;
+        right: 42px;
+        top: 54px;
+        width: 318px;
+        padding: 18px 20px;
+        border: 2px solid rgba(106, 90, 138, 0.85);
+        background: rgba(30, 24, 48, 0.88);
+        color: #e8e0f0;
+        font-size: 24px;
+        line-height: 1.5;
+        z-index: 3;
+      }
+
+      .caption-group {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        bottom: 44px;
+        min-height: 96px;
+        padding: 22px 28px;
+        box-sizing: border-box;
+        border: 2px solid rgba(200, 120, 48, 0.9);
+        background: rgba(18, 14, 28, 0.84);
+        color: #ffffff;
+        font-size: 36px;
+        line-height: 1.45;
+        font-weight: 700;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 4;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var beatDuration = 9.98;
+
+      tl.to(".backdrop", { scale: 1.04, duration: beatDuration, ease: "none" }, 0);
+      tl.fromTo(".video-frame", { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.55, ease: "power3.out" }, 0.2);
+      tl.fromTo(".eyebrow", { y: -28, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, 0.35);
+      tl.fromTo(".title", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "expo.out" }, 0.48);
+      tl.fromTo(".title-en", { y: 18, opacity: 0 }, { y: 0, opacity: 1, duration: 0.42, ease: "power2.out" }, 0.82);
+      tl.fromTo(".theme-chip", { x: -36, opacity: 0 }, { x: 0, opacity: 1, duration: 0.42, ease: "power2.out" }, 1.02);
+      tl.fromTo(".mood-note", { x: 38, opacity: 0 }, { x: 0, opacity: 1, duration: 0.52, ease: "power2.out" }, 1.18);
+
+      tl.to(".theme-chip", {
+        boxShadow: "0 0 34px rgba(255, 68, 102, 0.35)",
+        yoyo: true,
+        repeat: Math.max(0, Math.floor(beatDuration / 1.6) - 1),
+        duration: 0.8,
+        ease: "sine.inOut"
+      }, 1.3);
+
+      var captions = [
+        { id: "#cap-0", start: 0.1, end: 3.583 },
+        { id: "#cap-1", start: 3.533, end: 9.681 }
+      ];
+
+      captions.forEach(function (cap) {
+        tl.set(cap.id, { visibility: "visible" }, cap.start);
+        tl.fromTo(cap.id, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.38, ease: "power3.out" }, cap.start);
+        tl.to(cap.id, { opacity: 0, y: -14, duration: 0.14, ease: "power2.in" }, Math.max(cap.start + 0.8, cap.end - 0.14));
+        tl.set(cap.id, { opacity: 0, visibility: "hidden" }, cap.end);
+      });
+
+      window.__timelines["beat-1-hook"] = tl;
+    </script>
+  </div>
+</template>

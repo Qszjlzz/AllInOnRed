@@ -1,0 +1,170 @@
+<template id="beat-2-setup-template">
+  <div
+    id="beat-2-root"
+    data-composition-id="beat-2-setup"
+    data-width="1280"
+    data-height="720"
+    data-start="0"
+    data-duration="7.77"
+  >
+    <div class="beat-shell beat-2">
+      <div class="overlay-wash"></div>
+      <div class="step-panel">
+        <div class="step-row row-1"><span>01</span> 抽到朋友的链接</div>
+        <div class="step-row row-2"><span>02</span> 先压进三百</div>
+        <div class="step-row row-3"><span>03</span> 红键开始发亮</div>
+      </div>
+      <div class="focus-box"></div>
+      <div class="focus-label">剧情不是旁白，它会直接把你推到按钮前。</div>
+
+      <div class="caption-group" id="cap-0">开局在深夜办公室，我先抽到朋友发来的链接。</div>
+      <div class="caption-group" id="cap-1">存进三百，第一下就赢了五十。</div>
+    </div>
+
+    <style>
+      @font-face {
+        font-family: "YaHeiLocal";
+        src: local("Microsoft YaHei");
+      }
+
+      #beat-2-root {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        font-family: "YaHeiLocal", sans-serif;
+        color: #e8e0f0;
+      }
+
+      .beat-shell {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+      }
+
+      .overlay-wash {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at right top, rgba(255, 68, 102, 0.14), rgba(255, 68, 102, 0) 34%),
+          linear-gradient(180deg, rgba(18, 14, 28, 0.04), rgba(18, 14, 28, 0.32));
+        z-index: 2;
+      }
+
+      .step-panel {
+        position: absolute;
+        right: 42px;
+        top: 42px;
+        width: 318px;
+        padding: 18px;
+        box-sizing: border-box;
+        border: 2px solid rgba(110, 198, 255, 0.55);
+        background: rgba(30, 24, 48, 0.86);
+        box-shadow: rgba(0, 0, 0, 0.45) 8px 8px 0 0;
+        z-index: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .step-row {
+        padding: 14px 16px;
+        border: 2px solid rgba(106, 90, 138, 0.88);
+        background: rgba(45, 38, 64, 0.82);
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      .step-row span {
+        display: inline-block;
+        margin-right: 12px;
+        color: #6ec6ff;
+      }
+
+      .row-2 {
+        border-color: rgba(255, 204, 68, 0.9);
+      }
+
+      .row-3 {
+        border-color: rgba(255, 68, 102, 0.92);
+      }
+
+      .focus-box {
+        position: absolute;
+        left: 782px;
+        top: 146px;
+        width: 208px;
+        height: 168px;
+        border: 3px solid rgba(255, 68, 102, 0.95);
+        box-shadow: 0 0 0 4px rgba(255, 68, 102, 0.18);
+        z-index: 3;
+      }
+
+      .focus-label {
+        position: absolute;
+        left: 54px;
+        top: 52px;
+        width: 350px;
+        padding: 16px 18px;
+        border: 2px solid rgba(255, 204, 68, 0.9);
+        background: rgba(18, 14, 28, 0.84);
+        color: #ffcc44;
+        font-size: 25px;
+        line-height: 1.45;
+        z-index: 3;
+      }
+
+      .caption-group {
+        position: absolute;
+        left: 64px;
+        right: 64px;
+        bottom: 44px;
+        min-height: 92px;
+        padding: 22px 28px;
+        box-sizing: border-box;
+        border: 2px solid rgba(200, 120, 48, 0.92);
+        background: rgba(18, 14, 28, 0.84);
+        color: #ffffff;
+        font-size: 36px;
+        line-height: 1.45;
+        font-weight: 700;
+        visibility: hidden;
+        opacity: 0;
+        z-index: 4;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      var beatDuration = 7.77;
+
+      tl.fromTo(".focus-label", { x: -36, opacity: 0 }, { x: 0, opacity: 1, duration: 0.42, ease: "power2.out" }, 0.32);
+      tl.fromTo(".step-panel", { x: 54, opacity: 0 }, { x: 0, opacity: 1, duration: 0.46, ease: "power3.out" }, 0.42);
+      tl.fromTo(".focus-box", { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.38, ease: "power2.out" }, 0.7);
+      tl.to(".focus-box", {
+        boxShadow: "0 0 0 8px rgba(255, 68, 102, 0.10)",
+        yoyo: true,
+        repeat: Math.max(0, Math.floor(beatDuration / 1.2) - 1),
+        duration: 0.6,
+        ease: "sine.inOut"
+      }, 1.0);
+
+      var captions = [
+        { id: "#cap-0", start: 0.0, end: 4.567 },
+        { id: "#cap-1", start: 4.567, end: 7.77 }
+      ];
+
+      captions.forEach(function (cap) {
+        tl.set(cap.id, { visibility: "visible" }, cap.start);
+        tl.fromTo(cap.id, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.34, ease: "power3.out" }, cap.start);
+        tl.to(cap.id, { opacity: 0, y: -12, duration: 0.14, ease: "power2.in" }, Math.max(cap.start + 0.7, cap.end - 0.14));
+        tl.set(cap.id, { opacity: 0, visibility: "hidden" }, cap.end);
+      });
+
+      window.__timelines["beat-2-setup"] = tl;
+    </script>
+  </div>
+</template>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All In on Red Playthrough Video</title>
+    <style>
+      html, body {
+        margin: 0;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: #120e1c;
+      }
+
+      #root {
+        position: relative;
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+        background: #120e1c;
+      }
+
+      .media-plate {
+        position: absolute;
+        inset: 0;
+        width: 1280px;
+        height: 720px;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-lqvg" id="root" data-composition-id="all-in-on-red-playthrough" data-width="1280" data-height="720" data-start="0" data-duration="43.04">
+      <video data-hf-id="hf-dpj4" id="video-beat1" class="media-plate" src="raw/b4575195e0351916234e482ce383bc2f.webm" data-start="0" data-duration="9.98" data-track-index="0" data-media-start="0" muted playsinline></video>
+
+      <video data-hf-id="hf-mb9c" id="video-beat2" class="media-plate" src="raw/b4575195e0351916234e482ce383bc2f.webm" data-start="9.98" data-duration="7.77" data-track-index="0" data-media-start="9.98" muted playsinline></video>
+
+      <video data-hf-id="hf-42pa" id="video-beat3" class="media-plate" src="raw/b4575195e0351916234e482ce383bc2f.webm" data-start="17.75" data-duration="10.50" data-track-index="0" data-media-start="17.75" muted playsinline></video>
+
+      <video data-hf-id="hf-l82p" id="video-beat4" class="media-plate" src="raw/b4575195e0351916234e482ce383bc2f.webm" data-start="28.25" data-duration="5.63" data-track-index="0" data-media-start="28.25" muted playsinline></video>
+
+      <img data-hf-id="hf-ceil" id="still-beat4" class="media-plate clip" src="stills/cycle2-red-prompt.png" data-start="33.88" data-duration="9.16" data-track-index="0" alt="">
+
+      <audio data-hf-id="hf-8tzp" id="narration" src="narration.mp3" data-start="0" data-duration="43.04" data-track-index="8" data-volume="1"></audio>
+
+      <div data-hf-id="hf-bi5h" id="beat1" data-composition-id="beat-1-hook" data-composition-src="compositions/beat-1-hook.html" data-start="0" data-duration="9.98" data-track-index="1"></div>
+
+      <div data-hf-id="hf-lu1h" id="beat2" data-composition-id="beat-2-setup" data-composition-src="compositions/beat-2-setup.html" data-start="9.98" data-duration="7.77" data-track-index="1"></div>
+
+      <div data-hf-id="hf-ldz5" id="beat3" data-composition-id="beat-3-feedback" data-composition-src="compositions/beat-3-feedback.html" data-start="17.75" data-duration="10.50" data-track-index="1"></div>
+
+      <div data-hf-id="hf-vn1e" id="beat4" data-composition-id="beat-4-cycle-two" data-composition-src="compositions/beat-4-cycle-two.html" data-start="28.25" data-duration="14.79" data-track-index="1"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      var tl = gsap.timeline({ paused: true });
+      window.__timelines["all-in-on-red-playthrough"] = tl;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+.thumbnails/
+.waveform-cache/
+__pycache__/
+verification/
+*.log
