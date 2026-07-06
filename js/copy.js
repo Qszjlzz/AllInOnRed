@@ -70,7 +70,7 @@ export const COPY = {
     choices: {
       rewind: '回到之前，重新选择',
       mainMenu: '返回主菜单',
-      continueDemo: '收下这个短结局',
+      continueDemo: '收进图鉴并结束',
     },
   },
 
@@ -255,7 +255,7 @@ export const COPY = {
           achievement: '成就：被迫中断的人',
         },
       },
-      demoEndPrompt: '这一晚可以先停在这里，也可以带着这次选择继续往后走。你想怎么处理这个分支？',
+      demoEndPrompt: '这个分支已经走到一个结局。你可以把它收进图鉴，也可以回到前面重选，或者继续把这一晚往后过。',
     },
     2: {
       title: '第二周 · 余温',
@@ -635,8 +635,8 @@ export const COPY = {
 
   endings: {
     demo_stub: {
-      title: 'Demo 未完待续',
-      body: '这一段还没写完，但现在你已经不会在这里看到它了。',
+      title: '未使用的占位结局',
+      body: '这个占位文本理论上不会在正式流程里出现；如果你看到了它，说明有分支没有正确落到正式结局。',
     },
     rules_quit: {
       title: '及时离开的人',

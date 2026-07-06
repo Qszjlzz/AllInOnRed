@@ -331,7 +331,7 @@
       choices: {
         rewind: "\u56DE\u5230\u4E4B\u524D\uFF0C\u91CD\u65B0\u9009\u62E9",
         mainMenu: "\u8FD4\u56DE\u4E3B\u83DC\u5355",
-        continueDemo: "\u6536\u4E0B\u8FD9\u4E2A\u77ED\u7ED3\u5C40"
+        continueDemo: "\u6536\u8FDB\u56FE\u9274\u5E76\u7ED3\u675F"
       }
     },
     cycles: {
@@ -515,7 +515,7 @@
             achievement: "\u6210\u5C31\uFF1A\u88AB\u8FEB\u4E2D\u65AD\u7684\u4EBA"
           }
         },
-        demoEndPrompt: "\u8FD9\u4E00\u665A\u53EF\u4EE5\u5148\u505C\u5728\u8FD9\u91CC\uFF0C\u4E5F\u53EF\u4EE5\u5E26\u7740\u8FD9\u6B21\u9009\u62E9\u7EE7\u7EED\u5F80\u540E\u8D70\u3002\u4F60\u60F3\u600E\u4E48\u5904\u7406\u8FD9\u4E2A\u5206\u652F\uFF1F"
+        demoEndPrompt: "\u8FD9\u4E2A\u5206\u652F\u5DF2\u7ECF\u8D70\u5230\u4E00\u4E2A\u7ED3\u5C40\u3002\u4F60\u53EF\u4EE5\u628A\u5B83\u6536\u8FDB\u56FE\u9274\uFF0C\u4E5F\u53EF\u4EE5\u56DE\u5230\u524D\u9762\u91CD\u9009\uFF0C\u6216\u8005\u7EE7\u7EED\u628A\u8FD9\u4E00\u665A\u5F80\u540E\u8FC7\u3002"
       },
       2: {
         title: "\u7B2C\u4E8C\u5468 \xB7 \u4F59\u6E29",
@@ -884,8 +884,8 @@
     },
     endings: {
       demo_stub: {
-        title: "Demo \u672A\u5B8C\u5F85\u7EED",
-        body: "\u8FD9\u4E00\u6BB5\u8FD8\u6CA1\u5199\u5B8C\uFF0C\u4F46\u73B0\u5728\u4F60\u5DF2\u7ECF\u4E0D\u4F1A\u5728\u8FD9\u91CC\u770B\u5230\u5B83\u4E86\u3002"
+        title: "\u672A\u4F7F\u7528\u7684\u5360\u4F4D\u7ED3\u5C40",
+        body: "\u8FD9\u4E2A\u5360\u4F4D\u6587\u672C\u7406\u8BBA\u4E0A\u4E0D\u4F1A\u5728\u6B63\u5F0F\u6D41\u7A0B\u91CC\u51FA\u73B0\uFF1B\u5982\u679C\u4F60\u770B\u5230\u4E86\u5B83\uFF0C\u8BF4\u660E\u6709\u5206\u652F\u6CA1\u6709\u6B63\u786E\u843D\u5230\u6B63\u5F0F\u7ED3\u5C40\u3002"
       },
       rules_quit: {
         title: "\u53CA\u65F6\u79BB\u5F00\u7684\u4EBA",
@@ -1004,84 +1004,84 @@
       title: EARLY_ENDINGS.rules_quit?.title || "\u53CA\u65F6\u79BB\u5F00\u7684\u4EBA",
       clue: "\u770B\u5B8C\u89C4\u5219\u4EE5\u540E\u7ACB\u523B\u79BB\u5F00",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-rules-quit.png"
     },
     {
       id: "stop_after_1",
       title: EARLY_ENDINGS.stop_after_1?.title || "\u89C1\u597D\u5C31\u6536\u7684\u4EBA",
       clue: "\u7B2C\u4E00\u6B21\u8D62\u540E\u5C31\u505C\u624B",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-stop-after-1.png"
     },
     {
       id: "stop_after_2",
       title: EARLY_ENDINGS.stop_after_2?.title || "\u6709\u514B\u5236\u529B\u7684\u4EBA",
       clue: "\u7B2C\u4E8C\u6B21\u8D62\u540E\u4E3B\u52A8\u6536\u624B",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-stop-after-2.png"
     },
     {
       id: "stop_after_3",
       title: EARLY_ENDINGS.stop_after_3?.title || "\u53CA\u65F6\u56DE\u5934\u7684\u4EBA",
       clue: "\u7B2C\u4E00\u6B21\u8F93\u4EE5\u540E\u7ACB\u523B\u56DE\u5934",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-stop-after-3.png"
     },
     {
       id: "quit_colleague",
       title: EARLY_ENDINGS.quit_colleague?.title || "\u6709\u4EBA\u5728\u7B49\u4F60\u56DE\u5BB6",
       clue: "\u88AB\u540C\u4E8B\u6253\u65AD\u4EE5\u540E\u76F4\u63A5\u56DE\u5BB6",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-quit-colleague.png"
     },
     {
       id: "phone_dead",
       title: EARLY_ENDINGS.phone_dead?.title || "\u88AB\u8FEB\u4E2D\u65AD\u7684\u4EBA",
       clue: "\u4E00\u8DEF\u6309\u5230\u624B\u673A\u5F7B\u5E95\u6CA1\u7535",
       tone: "bad",
-      art: "assets/pixel/ending-ruin.png"
+      art: "assets/pixel/ending-phone-dead.png"
     },
     {
       id: "perfect",
       title: COPY.endings.perfect.title,
       clue: "\u4F4E\u503A\u52A1\u3001\u4F4E\u6309\u952E\u6B21\u6570\u5730\u56DE\u5BB6",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-perfect-home.png"
     },
     {
       id: "awaken",
       title: COPY.endings.awaken.title,
       clue: "\u4E2D\u7B49\u4E8F\u7A7A\u65F6\u505C\u4F4F\u6700\u540E\u4E00\u4E0B",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-awaken-realize.png"
     },
     {
       id: "stop_loss",
       title: COPY.endings.stop_loss.title,
       clue: "\u9AD8\u503A\u52A1\u4E0B\u4E5F\u9009\u62E9\u53CA\u65F6\u6B62\u635F",
       tone: "good",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-stop-loss.png"
     },
     {
       id: "ruin",
       title: COPY.endings.ruin.title,
       clue: "\u7B2C\u4E00\u6B21\u5728\u6700\u540E\u771F\u7684\u6309\u4E0B\u53BB",
       tone: "bad",
-      art: "assets/pixel/ending-ruin.png"
+      art: "assets/pixel/ending-ruin-fall.png"
     },
     {
       id: "memory",
       title: COPY.endings.memory.title,
       clue: "\u574F\u7ED3\u5C40\u4E4B\u540E\u91CD\u65B0\u5FCD\u4F4F",
       tone: "loop",
-      art: "assets/pixel/ending-awaken.png"
+      art: "assets/pixel/ending-memory-loop.png"
     },
     {
       id: "delusion",
       title: COPY.endings.delusion.title,
       clue: "\u574F\u7ED3\u5C40\u4E4B\u540E\u518D\u6B21\u6309\u4E0B\u53BB",
       tone: "bad",
-      art: "assets/pixel/ending-ruin.png"
+      art: "assets/pixel/ending-delusion-loop.png"
     }
   ];
   var ENDING_LOOKUP = Object.fromEntries(ENDING_CATALOG.map((entry, index) => [
@@ -3646,6 +3646,7 @@
       <div class="ending-preview-grid">
         ${progress.entries.map((entry) => `
           <div class="ending-preview-card ${entry.unlocked ? "unlocked" : "locked"} tone-${escapeHtml(entry.tone)}">
+            <div class="ending-preview-thumb" ${entry.unlocked ? `style="background-image:url('${escapeHtml(entry.art)}')"` : ""}></div>
             <span class="ending-preview-index">#${String(entry.index).padStart(2, "0")}</span>
             <strong>${escapeHtml(entry.unlocked ? entry.title : "\u672A\u89E3\u9501")}</strong>
             <span>${escapeHtml(entry.unlocked ? entry.clue : "\u7559\u7ED9\u4E0B\u4E00\u6B21\u4E0D\u540C\u7684\u9009\u62E9")}</span>

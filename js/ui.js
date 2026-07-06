@@ -564,6 +564,7 @@ function renderEndingPreview(progress) {
       <div class="ending-preview-grid">
         ${progress.entries.map((entry) => `
           <div class="ending-preview-card ${entry.unlocked ? 'unlocked' : 'locked'} tone-${escapeHtml(entry.tone)}">
+            <div class="ending-preview-thumb" ${entry.unlocked ? `style="background-image:url('${escapeHtml(entry.art)}')"` : ''}></div>
             <span class="ending-preview-index">#${String(entry.index).padStart(2, '0')}</span>
             <strong>${escapeHtml(entry.unlocked ? entry.title : '未解锁')}</strong>
             <span>${escapeHtml(entry.unlocked ? entry.clue : '留给下一次不同的选择')}</span>

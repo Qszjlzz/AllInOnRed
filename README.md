@@ -1,135 +1,76 @@
 # 红键梭哈 / All In on Red
 
-> 完整可玩版 · 反沉迷叙事 · **像素桌面 + 五周期事件卡牌**
-
-> 主题句：**别按那个键**
-
-深夜加班的上班族。每周期牌桌上刷出 **3 张事件牌**，行动格只能选 **1 张**——朋友的链接、工作日报、家人的消息、账单、备忘录……选哪张，走向哪条分支。
+> 像素桌面叙事游戏。主题：**别按那个键**。
 
 ## 游戏简介
+《红键梭哈 / All In on Red》是一款围绕诱惑、债务和上瘾感展开的像素桌面叙事游戏。深夜加班时，你点开一个名为“别按那个键.html”的页面，屏幕中央只剩下一颗不断诱惑你的红色按钮。
 
-《红键梭哈 / All In on Red》是一款像素桌面叙事游戏，也是一场关于诱惑、债务与上瘾的互动体验。深夜加班时，你点开一个名为“别按那个键”的网页，屏幕中央只剩下一颗不断引诱你的红按钮。
+接下来的五个周期里，你要在工作、家庭、账单和赌博冲动之间来回拉扯。你可以赚钱、还债、回消息，也可以一次次按下那个按钮，赌自己这次能翻盘。每一次选择都会把故事推向不同的方向。
 
-在接下来的五个周期里，你要一边维持工作、一边面对账单和家人的消息，同时不断和自己的侥幸心理拉扯。你可以赚钱、还债、回家，也可以一次次按下那颗按钮，赌自己这次能够翻盘。但每一次按下去，你失去的都不只是钱。
+## 当前版本内容
+- 五个完整周期的主线流程
+- 每周期三张事件牌的分支推进
+- 聊天、家庭、工作、赌博四类桌面窗口交互
+- 工作 QTE、小额/三连/十连赌博解锁
+- 周期一短结局回溯，后续周期主线与最终抉择
+- 12 个可解锁结局与开场结局图鉴
+- 开场封面、继续游戏、存档恢复
+- 已生成的像素美术素材与结局专属插图
+- 一条带字幕和解说的试玩成片
 
-**English blurb:** *All In on Red* is a pixel-desktop narrative game about temptation, debt, and addiction. After opening a link called “Don’t Press That Button,” you spend five cycles juggling work, family, bills, and the urge to gamble, with every press pulling you deeper toward collapse.
+## 运行方式
 
----
+### 直接打开
+1. 直接打开 `index.html`
+2. 不依赖额外后端，页面使用 `js/game.bundle.js`
 
-## 如何运行
-
-### 直接打开（推荐）
-
-1. 双击 [`index.html`](index.html)  
-2. 无需 Node / 服务器（使用 `js/game.bundle.js`，支持 `file://`）
-
-修改源码后打包：
+源代码有改动后重新打包：
 
 ```bash
 npm run build
 ```
 
-### 本地服务器（可选）
+### 本地预览
 
 ```bash
 npm run serve
 ```
 
-**推荐浏览器**：Chrome / Edge，宽度 ≥ 1024px。
+推荐使用 Chrome 或 Edge。
 
----
-
-## 怎么玩
-
-1. **开始** → 阅读底部 **剧情框**（橙边 narrative panel）  
-2. **事件牌桌**窗口：每周期固定出现 3 张牌  
-3. **点击或拖入**一张到行动格 → 触发该分支（其余 2 张本周期作废）  
-4. 可自由打开 **聊天 / 工作 / 赌博 / 家庭群** 窗口，在周期内继续做额外操作  
-5. 分支结束后点 HUD **「结束本周期 →」** 进入下一周  
-6. 到第 5 周会进入 **最终抉择**，并根据债务、赌博次数和重玩记忆触发不同结局
-
-### 五周期主题
-
-| 周期 | 主题 | 代表事件 |
-|------|------|----------|
-| 1 | 好奇 | 朋友的链接、第一次按下去 |
-| 2 | 余温 | 再玩一次、早餐消息、继续加班 |
-| 3 | 深陷 | 赌一把大的、朵朵的画、工作硬撑 |
-| 4 | 对账 | 账单提醒、备忘录、未读消息 |
-| 5 | 最后一夜 | 家人等待、再按一次、最终决定 |
-
-### 其它窗口
-
-| 任务栏 | 窗口 | 用途 |
-|--------|------|------|
-| 🃏 | 事件牌桌 | 每周期选牌 |
-| 💬 | 阿凯聊天 | IM 消息 |
-| 🔴 | 别按那个键.html | 赌博（单按 / 5 次三连 / 10 次十连） |
-| 💼 | 加班维护 | 工作 QTE |
-| 👨‍👩‍👧 | 家庭群 | 家人消息 |
-
-- **剧情** → 底部框  
-- **聊天** → 聊天窗  
-- 窗口可 **拖拽**，新打开会 **叠层偏移**
-
----
-
-## 美术素材
-
-当前版本已经内置了一批生成好的像素 PNG，并继续保留缺图时的 CSS 回退。更多替换位详见：
-
-- **[docs/ART_ASSET_LIST.md](docs/ART_ASSET_LIST.md)** — 完整清单 + AI 生图 prompt  
-- **[assets/pixel/README.md](assets/pixel/README.md)** — 文件名对照  
-
-缺失文件时游戏使用 CSS 色块占位；替换后 `Ctrl+F5` 刷新。
-
----
-
-## 项目结构
-
-```
-index.html
-css/style.css           像素风样式
-js/game.bundle.js       打包产物
-js/main.js              入口
-js/cards.js             卡牌 + 五周期剧情引擎  ★
-js/cycles.js            周期定义              ★
-js/copy.js              全量文案（五周期 + 结局）
-js/state.js / ui.js / gambling.js / work.js / audio.js
-assets/pixel/           ← 你放素材 here
-docs/
-  ART_ASSET_LIST.md
-  REDESIGN_CHANGELOG.md
-  DESIGN_MERGE.md
-```
-
----
+## 游玩说明
+1. 从封面进入新游戏，或继续已有存档。
+2. 每个周期会出现 3 张事件牌，你只能处理其中 1 张。
+3. 分支会把你带去聊天、家庭、工作或赌博窗口。
+4. 赌博相关的即时反馈会直接显示本次得失和状态变化。
+5. 周期结束后点击“结束本周期”，进入下一轮。
+6. 第五周期会进入最终抉择，并根据债务、按键次数和重玩记忆落入不同结局。
+7. 部分早期结局可以回到前一个关键节点重选，也可以直接收进图鉴。
 
 ## 测试
 
 ```bash
+npm run build
 node js/playtest-runner.js
 node scripts/ui-playtest-dom.mjs
 ```
 
----
+## 视频
+- 成片：`videos/all-in-on-red-playthrough/renders/all-in-on-red-playthrough.mp4`
+- 视频工程：`videos/all-in-on-red-playthrough/`
 
-## 设计文档
+## 关键文档
+- `docs/CURRENT_STATUS.md`：当前交付状态与完成项
+- `docs/QA_TEST_REPORT_LATEST.md`：最新构建与验收结果
+- `docs/ART_ASSET_LIST.md`：美术资产清单
+- `docs/CODEX_ART_GENERATION.md`：生成素材记录
 
-| 文档 | 内容 |
-|------|------|
-| [REDESIGN_CHANGELOG.md](docs/REDESIGN_CHANGELOG.md) | **本次重构：问题、方案、架构对比** |
-| [ART_ASSET_LIST.md](docs/ART_ASSET_LIST.md) | 美术清单 + prompt |
-| [DESIGN_MERGE.md](docs/DESIGN_MERGE.md) | 两份策划案融合 |
-| [COPY_BRANCH_MAP.md](docs/COPY_BRANCH_MAP.md) | 分支映射 |
-
----
+## 过程文档说明
+仓库里保留了一批更早阶段的策划、分工和 Demo 计划文档，例如 `docs/DEMO_PLAN.md`、`docs/DESIGN_MERGE.md`、`docs/WRITER_BRIEF.md`。这些文件主要用于记录开发过程，里面可能还会保留早期 “Demo” 表述，不代表当前交付版本只有 Demo 范围。
 
 ## 存档
+- 进行中存档：`localStorage["biean_save"]`
+- 结局记忆：`localStorage["biean_last_ending"]`
+- 已解锁结局：`localStorage["biean_unlocked_endings"]`
 
-- `localStorage` 键 `biean_save`  
-- 结局界面「重新开始」清除存档  
-
----
-
-**别按那个键** — 用卡牌选择、桌面窗口和最终抉择，呈现一种慢慢把生活输给按钮的过程。
+《红键梭哈》现在的目标不是演示一个机制，而是让玩家完整经历一段逐步沉迷、不断自辩、最后做出抉择的夜晚。

@@ -1,189 +1,111 @@
-# QA Test Report — 别按那个键 (Latest)
+# QA Test Report — 红键梭哈 / All In on Red (Latest)
 
-**Date:** 2026-07-05  
-**Build:** cycle-card desktop redesign + pixel art path hooks  
-**Tester:** QA/Playtest Agent (autonomous)  
-**Verdict:** ✅ **P0 PASS** — Demo playable; automated 25/25 tests green after fixes
+**Date:** 2026-07-06  
+**Tester:** Codex autonomous playtest + local verification  
+**Verdict:** ✅ **Release Candidate Pass** — 当前版本可完整游玩，自动化与浏览器验证通过
 
 ---
 
 ## Executive Summary
 
-| Suite | Result |
-|-------|--------|
-| `node js/playtest-runner.js` | **7/7 PASS** |
-| `node scripts/ui-playtest-dom.mjs` | **18/18 PASS** |
-| `npm run build` | ✅ bundle 76.4kb |
-| Manual Cycle 1 logic trace | ✅ branches coherent |
-| P0 bugs found | 2 fixed (see below) |
-| P0 open | 0 |
+| Check | Result |
+|------|--------|
+| `npm run build` | ✅ PASS |
+| `node js/playtest-runner.js` | ✅ 24/24 PASS |
+| `node scripts/ui-playtest-dom.mjs` | ✅ 31/31 PASS |
+| Chrome 实机试玩 | ✅ PASS |
+| 试玩视频成片 | ✅ 已生成 |
+| P0 阻塞问题 | 0 |
 
 ---
 
-## P0 Fixes Applied This Session
+## Scope Verified
 
-| ID | Severity | Issue | Fix |
-|----|----------|-------|-----|
-| BUG-001 | **P0** | `js/copy.js` syntax error — `press3` branch had `],` instead of `},` crashing all ESM imports | Fixed object closing brace; rebuilt bundle |
-| BUG-002 | **P0** | Mute button double-fired in headless/jsdom → toggled on then immediately off (`localStorage` stayed `0`) | Added `muteBusy` guard + microtask reset in `js/audio.js` |
+本轮确认的内容包括：
 
----
-
-## Automated Test Log
-
-### Logic (`js/playtest-runner.js`)
-
-```
-PASS — cycles: 5 cycle defs
-PASS — cycle1 cards match script
-PASS — copy: cycle1 early endings exist
-PASS — mood cards accumulate
-PASS — endCycle advances
-PASS — gamble unlock by press count
-PASS — copy: narrative rewind label
-```
-
-### DOM UI (`scripts/ui-playtest-dom.mjs`)
-
-```
-PASS — Bundle loads without throw
-PASS — Intro start button exists
-PASS — Mute toggle
-PASS — Start dismisses modal
-PASS — Taskbar cards/chat/gamble/family opens window
-PASS — Work window opens
-PASS — Cycle 1 cards rendered (3)
-PASS — Gamble click handled
-PASS — Deposit click handled
-PASS — Work QTE button appears
-PASS — Card pick triggers narrative
-PASS — End cycle button exists
-PASS — Window close hides chat
-PASS — game.bundle.js on disk
-PASS — index uses bundle not module
-```
+- 五个周期主线流程可进入并推进
+- 开场封面支持新游戏与继续游戏
+- 周期一短结局支持回溯或继续推进
+- 最终抉择、重玩记忆、结局图鉴正常工作
+- 12 个结局卡槽与缩略图展示正常
+- 结局画面已接入专属结局插图
+- 赌博即时反馈、工作 QTE、窗口交互可用
+- 试玩视频成片与素材工程已落盘
 
 ---
 
-## Interactive Element Matrix
+## Automated Results
 
-| Element | ID / Selector | Expected Behavior | Result | Notes |
-|---------|---------------|-------------------|--------|-------|
-| Intro start | `#btn-start` | Dismiss modal, open cards window, begin cycle 1 opening narrative | ✅ PASS | Typewriter text in `#narrative-text` |
-| Mute | `#btn-mute` | Toggle 🔊/🔇, persist `biean_mute` in localStorage | ✅ PASS | Fixed double-toggle bug |
-| End cycle | `#btn-end-cycle` | Blocked until card picked; advances cycle counter | ✅ PASS | Shows notify if unresolved |
-| Taskbar — 牌桌 | `[data-app=cards]` | Show cards window, highlight active | ✅ PASS | |
-| Taskbar — 聊天 | `[data-app=chat]` | Show chat window | ✅ PASS | |
-| Taskbar — 工作 | `[data-app=work]` | Show work window (unlocked cycle 1) | ✅ PASS | Was day-gated in old build |
-| Taskbar — 赌博 | `[data-app=gamble]` | Show gamble window | ✅ PASS | |
-| Taskbar — 家庭 | `[data-app=family]` | Show family window | ✅ PASS | |
-| Window close | `.btn-close` | Hide window | ✅ PASS | |
-| Window minimize | `.btn-minimize` | Minimize window | ⚠️ Manual | Not in DOM test; code present |
-| Window drag | `.title-bar` | Reposition window | ⚠️ Manual | `makeDraggable()` in ui.js |
-| Event card click | `.event-card` | Pick card → forfeit others → branch | ✅ PASS | |
-| Event card drag | `#action-slot` drop | Same as click pick | ⚠️ Manual | drop handler wired |
-| Gamble once | `#btn-gamble-once` | Spin wheel, log result, first free | ✅ PASS | Blocked during `storyBusy` |
-| Triple / Ten | `#btn-triple`, `#btn-ten` | Hidden until 5/10 presses | ✅ PASS | Logic test confirms unlock |
-| Deposit | `#btn-deposit-all` | Cash → virtual balance | ✅ PASS | |
-| Withdraw | `#btn-withdraw` | Virtual → cash, -1 AP | ⚠️ Manual | AP-gated |
-| Work start | `#btn-work-start` | Launch QTE, `#work-hit` appears | ✅ PASS | Blocked during story |
-| Work hit | `#work-hit` | Timing minigame | ⚠️ Manual | click loop in work.js |
-| Narrative choices | `.choice-btn` | Branch story (friend_link path) | ⚠️ Manual | Async Promise in ui.js |
-| Chat file card | `.file-card` | Opens gamble window | ⚠️ Manual | friend_link branch |
-| Clock | `#clock` | Live HH:MM | ⚠️ Manual | setInterval 1s |
-| HUD stats | `#hud-*` | Cycle/AP/cash/virtual/mood counts | ✅ PASS | CSS fallback without PNGs |
+### Logic
 
----
+`node js/playtest-runner.js`
 
-## Cycle 1 Card Flow Trace (Manual Code Review)
+- 5 个周期定义存在
+- 周期一早期结局数据齐全
+- 周期 2–5 分支数据完整
+- 赌博不再消耗行动点
+- 故事连续性检查通过
+- 结局图鉴与进度跟踪通过
+- 最终结局判定与债务比率计算通过
 
-**Pool:** `friend_link` | `work_report` | `wife_msg` (`js/cycles.js`)
+结果：**24/24 PASS**
 
-### Path A — `friend_link` (full demo spine)
+### DOM / UI
 
-1. `placeCard('friend_link')` → `runFriendLinkBranch`
-2. Open chat → append 阿凯 messages + file card
-3. Open gamble → asset choice (¥100/300/500/1000) → `addVirtual`
-4. Choice: 试试看 | 看规则
-   - **Rules → quit:** early ending `rules_quit` + rewind offer
-   - **Rules → continue:** → press sequence
-5. Press sequence: +50 → +80 → -120 (scripted, no AP)
-6. After each win/loss: continue/stop choices → early endings `stop_after_1/2/3`
-7. Colleague interrupt → oneMore/quit → `phone_dead` ending (can continue to cycle 2)
-8. Rewind bookmarks restore via `rewindToBookmark`
+`node scripts/ui-playtest-dom.mjs`
 
-**Verdict:** ✅ Logic complete; copy keys match `COPY.cycles[1].branches.friend_link`
+- 开场封面正常渲染
+- 结局图鉴与缩略图正常渲染
+- 开始游戏、继续游戏、读档预览正常
+- 牌桌、聊天、赌博、家庭、工作窗口可打开
+- 周期一事件牌渲染正常
+- 赌博按钮、存入、工作 QTE 可触发
+- 结束周期、关闭窗口、继续存档流程正常
 
-### Path B — `work_report`
-
-1. Open work window → narrative → `addMood('diligent')` → `finishCycle`
-
-**Verdict:** ✅ Shorter branch OK
-
-### Path C — `wife_msg`
-
-1. Open family → chat → choice good/late → stable or anxiety mood → `finishCycle`
-
-**Verdict:** ✅ Family reply branch OK
-
-### Cycle advance
-
-- `advanceCycleManually()` requires `cycleResolved === true`
-- Cycle 2+ uses `runStubCycleBranch` (stub narrative + window hints)
-
-**Verdict:** ✅ Demo scope matches DESIGN_MERGE
+结果：**31/31 PASS**
 
 ---
 
-## Visual / Asset State
+## Browser Smoke Pass
 
-| Area | Current | Expected After Codex |
-|------|---------|----------------------|
-| Wallpaper | CSS gradient fallback | `desktop-bg.png` |
-| Taskbar | CSS + emoji icons | `taskbar.png` + `icon-*.png` |
-| Cards | Purple placeholder `.card-art` | `card-*.png` per event |
-| Gamble button | CSS radial + PNG fallback | `gamble-btn-*.png` |
-| Mood chips | PNG with onerror hide | `mood-*.png` |
-| Daughter drawing | `assets/placeholders/daughter-drawing.svg` | `daughter-drawing.png` |
+在 Chrome 中完成了以下实际检查：
 
-Missing PNGs **do not block gameplay** — CSS fallbacks active.
+1. 打开 `http://127.0.0.1:4174/`
+2. 确认封面、游戏名、结局图鉴布局正常
+3. 点击“开始游戏”进入桌面界面
+4. 检查周期一牌桌、聊天窗口、赌博窗口正常出现
+5. 进入“朋友的链接”分支，确认红色按钮与即时反馈区可见
 
----
-
-## Bugs — Open / Deferred
-
-| ID | Sev | Description | Status |
-|----|-----|-------------|--------|
-| BUG-003 | P1 | Taskbar still shows emoji not `icon-*.png` | Deferred — needs CSS hook after art drop |
-| BUG-004 | P1 | `window-border.png`, `narrative-frame.png` paths documented but not wired in CSS | Deferred — art-first |
-| BUG-005 | P1 | `scripts/ui-playtest.mjs` (Playwright) still references old day/memo UI | Update when Playwright CI needed |
-| BUG-006 | P2 | `setInterval(saveGame, 5000)` keeps Node process alive after tests | Harmless; exit 0 still works |
-| BUG-007 | P2 | Triple unlock needs ≥5 gambles but only 3 AP/cycle — requires multi-cycle | By design |
+结果：**PASS**
 
 ---
 
-## Smoke Test Script (Human)
+## Art and Ending Verification
 
-1. `npm run serve` → open index.html  
-2. Start → read cycle 1 opening in narrative panel  
-3. Click **朋友的链接** → follow chat → gamble choices  
-4. Press through scripted sequence OR pick stop early → verify ending + rewind  
-5. Restart → pick **妻子的消息** → reply good → see 踏实 mood chip  
-6. End cycle → verify cycle 2 stub message  
-7. Toggle mute, drag windows, deposit cash  
-
-**Expected duration:** 10–15 min full friend_link path
+- 新增 12 张结局专属插图已接入 `assets/pixel/ending-*.png`
+- 开场图鉴缩略图已显示对应结局缩略图容器
+- 结局页会根据结局 ID 读取对应插图，而不是复用一张通图
 
 ---
 
-## Sign-off
+## Video Deliverable
 
-| Check | Status |
-|-------|--------|
-| All P0 interactive paths functional | ✅ |
-| Automated tests green | ✅ 25/25 |
-| Bundle builds | ✅ |
-| Art drop-in docs ready | ✅ `docs/CODEX_ART_GENERATION.md` |
-| Known P1 documented | ✅ |
+- 成片路径：`videos/all-in-on-red-playthrough/renders/all-in-on-red-playthrough.mp4`
+- 旁白、字幕、覆盖层与视频工程文件均已存在
 
-**Recommendation:** Ship Demo for playtesting; parallelize Codex Batch A–C (31 P0 PNGs).
+---
+
+## Open Issues
+
+没有发现阻止交付的 P0 / P1 问题。
+
+非阻塞说明：
+
+- 仓库中仍保留部分早期策划 / Demo 过程文档，用于归档开发过程。
+- 当前交付状态以 `README.md`、`docs/CURRENT_STATUS.md` 和本报告为准。
+
+---
+
+## Recommendation
+
+可以按当前版本继续展示、试玩、录屏和提交仓库。后续如果还要继续增强，优先级建议放在新增剧情变体、额外结局演出和更多动态音画细节，而不是补基础可玩性。

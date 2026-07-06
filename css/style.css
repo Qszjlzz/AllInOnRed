@@ -813,6 +813,16 @@ html, body {
   flex-direction: column;
   gap: 5px;
 }
+.ending-preview-thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28)),
+    linear-gradient(135deg, rgba(110, 198, 255, 0.14), rgba(255, 68, 102, 0.08));
+  background-size: cover;
+  background-position: center;
+}
 .ending-preview-card strong {
   font-size: 11px;
   color: var(--text);
@@ -826,6 +836,11 @@ html, body {
 .ending-preview-card.locked {
   opacity: 0.72;
   border-style: dashed;
+}
+.ending-preview-card.locked .ending-preview-thumb {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.22)),
+    repeating-linear-gradient(135deg, rgba(154, 143, 176, 0.12), rgba(154, 143, 176, 0.12) 6px, rgba(45, 38, 64, 0.2) 6px, rgba(45, 38, 64, 0.2) 12px);
 }
 .ending-preview-card.tone-good {
   border-color: rgba(93, 255, 143, 0.55);

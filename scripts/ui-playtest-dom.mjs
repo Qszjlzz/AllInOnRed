@@ -82,6 +82,7 @@ record('Intro start button exists', !!window.document.getElementById('btn-start'
 record('Intro cover layout exists', !!window.document.querySelector('.cover-screen'));
 record('Intro ending gallery exists', !!window.document.querySelector('.ending-preview'));
 record('Intro ending gallery renders all endings', window.document.querySelectorAll('.ending-preview-card').length >= 10);
+record('Intro ending gallery renders thumbs', window.document.querySelectorAll('.ending-preview-thumb').length >= 10);
 record('Intro button label updated', window.document.getElementById('btn-start')?.textContent?.trim() === '开始游戏');
 
 click(window.document.getElementById('btn-mute'));
