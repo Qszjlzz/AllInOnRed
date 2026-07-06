@@ -1,6 +1,3 @@
-/**
- * 赌博系统 — 按键 + 转盘
- */
 import { BALANCE, randRange, pickWeighted, getDynamicWheel } from './balance.js';
 import { COPY } from './copy.js';
 import {
@@ -8,32 +5,34 @@ import {
   addCash,
   addVirtual,
   addMood,
+  spendAp,
   pushLog,
 } from './state.js';
 
-function formatSegmentMessage(segment, delta, useVirtual) {
-  const abs = Math.abs(delta);
-  const id = segment.id;
+function formatSegmentMessage(segment, delta) {
+  const amount = Math.abs(delta);
   const templates = COPY.gamble.segmentMessages;
-  if (id === 'double') return templates.double(getState().virtualBalance);
-  if (id === 'clear') return templates.clear(abs);
-  if (segment.effect === 'cash') {
-    if (id === 'small_win') return `${templates.small_win(abs)}（${segment.label}）`;
-    if (id === 'mid_win') return `${templates.mid_win(abs)}（${segment.label}）`;
-    if (id === 'big_win') return `${templates.big_win(abs)}（${segment.label}）`;
-    return `+¥${abs}（${segment.label}）`;
+
+  switch (segment.id) {
+    case 'small_win':
+      return `${templates.small_win(amount)} · ${segment.label}`;
+    case 'mid_win':
+      return `${templates.mid_win(amount)} · ${segment.label}`;
+    case 'big_win':
+      return `${templates.big_win(amount)} · ${segment.label}`;
+    case 'small_loss':
+      return `${templates.small_loss(amount)} · ${segment.label}`;
+    case 'mid_loss':
+      return `${templates.mid_loss(amount)} · ${segment.label}`;
+    case 'double':
+      return templates.double(getState().virtualBalance);
+    case 'clear':
+      return templates.clear(amount);
+    default:
+      return templates.default;
   }
-  if (segment.effect === 'loss') {
-    if (id === 'small_loss') return `${templates.small_loss(abs)}（${segment.label}）`;
-    if (id === 'mid_loss') return `${templates.mid_loss(abs)}（${segment.label}）`;
-    return `-¥${abs}（${segment.label}）`;
-  }
-  return templates.default;
 }
 
-/**
- * 执行一次转盘
- */
 export function spinOnce(useVirtual = true) {
   const state = getState();
   const wheel = getDynamicWheel(state.cycle || 1, state.mood.addiction);
@@ -50,7 +49,7 @@ export function spinOnce(useVirtual = true) {
         addCash(gain);
       }
       delta = gain;
-      message = formatSegmentMessage(segment, gain, useVirtual);
+      message = formatSegmentMessage(segment, delta);
       break;
     }
     case 'loss': {
@@ -66,7 +65,7 @@ export function spinOnce(useVirtual = true) {
         }
       }
       delta = -loss;
-      message = formatSegmentMessage(segment, -loss, useVirtual);
+      message = formatSegmentMessage(segment, delta);
       break;
     }
     case 'double': {
@@ -74,14 +73,14 @@ export function spinOnce(useVirtual = true) {
       const doubled = Math.min(before * 2, 5000);
       state.virtualBalance = doubled;
       delta = doubled - before;
-      message = formatSegmentMessage(segment, delta, true);
+      message = formatSegmentMessage(segment, delta);
       break;
     }
     case 'clear': {
       const cleared = state.virtualBalance;
       state.virtualBalance = 0;
       delta = -cleared;
-      message = formatSegmentMessage(segment, delta, true);
+      message = formatSegmentMessage(segment, delta);
       break;
     }
     default:
@@ -91,13 +90,11 @@ export function spinOnce(useVirtual = true) {
   return { segment, delta, message };
 }
 
-/**
- * 赌博一次（只受剧情状态影响，不再消耗行动点）
- */
 export function gamble(spinCount = 1) {
   const state = getState();
   const results = [];
   let firstNarrative = null;
+  const overallBefore = captureEconomy(state);
 
   const bet = randRange(BALANCE.gamble.betCash);
   if (state.virtualBalance >= bet) {
@@ -105,16 +102,20 @@ export function gamble(spinCount = 1) {
   } else if (state.cash >= bet) {
     addCash(-bet);
   } else if (state.cash + state.virtualBalance >= bet) {
-    const fromV = state.virtualBalance;
-    addVirtual(-fromV);
-    addCash(-(bet - fromV));
+    const fromVirtual = state.virtualBalance;
+    addVirtual(-fromVirtual);
+    addCash(-(bet - fromVirtual));
   }
 
   const prevCount = state.flags.gamble_count;
 
-  for (let i = 0; i < spinCount; i++) {
+  for (let i = 0; i < spinCount; i += 1) {
+    const beforeSpin = i === 0 ? overallBefore : captureEconomy(state);
     const useVirtual = state.virtualBalance > 0 || state.flags.gamble_count > 0;
-    results.push(spinOnce(useVirtual));
+    const spin = spinOnce(useVirtual);
+    spin.beforeState = beforeSpin;
+    spin.afterState = captureEconomy(state);
+    results.push(spin);
   }
 
   state.flags.gamble_count += spinCount;
@@ -131,13 +132,14 @@ export function gamble(spinCount = 1) {
   const addictionIdx = Math.min(state.mood.addiction, 2);
   const chance = BALANCE.gamble.addictionChance[addictionIdx];
   let moodGained = null;
+
   if (Math.random() < chance + (spinCount > 1 ? 0.15 : 0)) {
     addMood('addiction', 1);
     moodGained = 'addiction';
     results[results.length - 1].message += COPY.gamble.addictionEcho;
   }
 
-  if (results.some((r) => r.delta < 0) && Math.random() < 0.15) {
+  if (results.some((result) => result.delta < 0) && Math.random() < 0.15) {
     addMood('anxiety', 1);
     if (!moodGained) moodGained = 'anxiety';
   }
@@ -146,36 +148,68 @@ export function gamble(spinCount = 1) {
     results[results.length - 1].moodGained = moodGained;
   }
 
-  pushLog(`赌博 ${spinCount} 次`);
-  return { ok: true, results, firstNarrative };
+  pushLog(`gamble ${spinCount}`);
+  return {
+    ok: true,
+    results,
+    firstNarrative,
+    beforeState: overallBefore,
+    afterState: captureEconomy(state),
+  };
 }
 
-/** 存入虚拟余额 */
 export function depositToMachine(amount) {
   const state = getState();
-  const amt = Math.min(Math.max(0, amount), state.cash);
-  if (amt <= 0) return { ok: false, error: COPY.gamble.depositError };
-  addCash(-amt);
-  addVirtual(amt);
+  const beforeState = captureEconomy(state);
+  const actual = Math.min(Math.max(0, amount), state.cash);
+  if (actual <= 0) {
+    return { ok: false, error: COPY.gamble.depositError };
+  }
+
+  addCash(-actual);
+  addVirtual(actual);
   state.flags.gamble_opened = true;
-  state.flags.machine_deposit_total = (state.flags.machine_deposit_total || 0) + amt;
-  pushLog(`存入机器 ¥${amt}`);
-  return { ok: true, amount: amt };
+  state.flags.machine_deposit_total = (state.flags.machine_deposit_total || 0) + actual;
+  pushLog(`deposit ${actual}`);
+
+  return {
+    ok: true,
+    amount: actual,
+    beforeState,
+    afterState: captureEconomy(state),
+  };
 }
 
-/** 取出 — 消耗 1 AP */
 export function withdrawFromMachine() {
   const state = getState();
+  const beforeState = captureEconomy(state);
+
   if (state.virtualBalance <= 0) {
     return { ok: false, error: COPY.gamble.withdrawError };
   }
   if (!spendAp(1)) {
     return { ok: false, error: COPY.gamble.withdrawApError };
   }
+
   const maxOut = randRange(BALANCE.withdraw);
-  const amt = Math.min(state.virtualBalance, maxOut);
-  addVirtual(-amt);
-  addCash(amt);
-  pushLog(`从机器取出 ¥${amt}`);
-  return { ok: true, amount: amt };
+  const actual = Math.min(state.virtualBalance, maxOut);
+  addVirtual(-actual);
+  addCash(actual);
+  pushLog(`withdraw ${actual}`);
+
+  return {
+    ok: true,
+    amount: actual,
+    beforeState,
+    afterState: captureEconomy(state),
+  };
+}
+
+function captureEconomy(state = getState()) {
+  const debt = Math.max(0, state.billTotal - (state.cash + state.virtualBalance * BALANCE.debt.virtualWeight));
+  return {
+    cash: state.cash,
+    virtualBalance: state.virtualBalance,
+    debt: Math.round(debt),
+  };
 }

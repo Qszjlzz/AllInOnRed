@@ -15,7 +15,7 @@ export function createInitialState() {
     mood: { addiction: 0, stable: 0, anxiety: 0, diligent: 0 },
     moodCards: [],
     cycleResolved: false,
-    story: { bookmark: null, node: null },
+    story: { bookmark: null, node: null, cycleStartSave: null },
     flags: {
       intro_done: false,
       gamble_opened: false,

@@ -6,6 +6,14 @@
 
 深夜加班的上班族。每周期牌桌上刷出 **3 张事件牌**，行动格只能选 **1 张**——朋友的链接、工作日报、家人的消息、账单、备忘录……选哪张，走向哪条分支。
 
+## 游戏简介
+
+《红键梭哈 / All In on Red》是一款像素桌面叙事游戏，也是一场关于诱惑、债务与上瘾的互动体验。深夜加班时，你点开一个名为“别按那个键”的网页，屏幕中央只剩下一颗不断引诱你的红按钮。
+
+在接下来的五个周期里，你要一边维持工作、一边面对账单和家人的消息，同时不断和自己的侥幸心理拉扯。你可以赚钱、还债、回家，也可以一次次按下那颗按钮，赌自己这次能够翻盘。但每一次按下去，你失去的都不只是钱。
+
+**English blurb:** *All In on Red* is a pixel-desktop narrative game about temptation, debt, and addiction. After opening a link called “Don’t Press That Button,” you spend five cycles juggling work, family, bills, and the urge to gamble, with every press pulling you deeper toward collapse.
+
 ---
 
 ## 如何运行

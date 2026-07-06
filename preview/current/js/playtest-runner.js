@@ -16,7 +16,7 @@ import { getCardsForCycle, CYCLE_COUNT } from './cycles.js';
 import { COPY } from './copy.js';
 import { gamble } from './gambling.js';
 import { determineFinalEnding, getDebtRatioFromState } from './endings.js';
-import { auditStoryContinuity, resolveFinalDecisionCopy } from './story-logic.js';
+import { auditStoryContinuity, resolveEndingCopy, resolveFinalDecisionCopy } from './story-logic.js';
 
 const results = [];
 
@@ -155,6 +155,30 @@ run('story continuity audit passes', () => {
 run('perfect ending copy stays outcome-based', () => {
   if (COPY.endings.perfect.body.includes('机器里的钱')) {
     throw new Error(COPY.endings.perfect.body);
+  }
+});
+
+run('ending copy: family epilogue appears on good ending', () => {
+  const copy = resolveEndingCopy('perfect', {
+    flags: { family_branch_count: 1, family_reply_count: 1 },
+    stats: { gambleCount: 2, workCount: 1 },
+    virtualBalance: 0,
+    billPaid: 400,
+  });
+  if (!copy?.bodyExtra?.includes('一直有人在等你')) {
+    throw new Error(copy?.bodyExtra || 'missing family epilogue');
+  }
+});
+
+run('ending copy: work epilogue appears on bad ending without family history', () => {
+  const copy = resolveEndingCopy('ruin', {
+    flags: { work_branch_count: 1 },
+    stats: { gambleCount: 6, workCount: 1 },
+    virtualBalance: 0,
+    billPaid: 0,
+  });
+  if (!copy?.bodyExtra?.includes('工作窗口')) {
+    throw new Error(copy?.bodyExtra || 'missing work epilogue');
   }
 });
 

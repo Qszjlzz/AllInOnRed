@@ -9,6 +9,7 @@ import {
   endCycle,
   setEnding,
   payBill,
+  getDebt,
   exportState,
   loadState,
 } from './state.js';
@@ -20,6 +21,7 @@ import {
   resolveBranchCopy,
   resolveCycleOpening,
   resolveFinalDecisionCopy,
+  resolveEndingCopy,
 } from './story-logic.js';
 
 let uiCallbacks = null;
@@ -53,6 +55,9 @@ export async function beginCycle() {
 
   state.cycleResolved = false;
   state.flags.card_picked = null;
+  state.story.bookmark = null;
+  state.story.cycleStartSave = createCycleStartSave();
+  uiCallbacks.persistCycleStartSave?.(state.story.cycleStartSave);
 
   uiCallbacks.openWindow('cards');
   uiCallbacks.renderCardTable(getCycleCards(), null);
@@ -305,6 +310,13 @@ async function runFriendLinkBranch(branch) {
     const deposit = depositToMachine(Math.min(amount, getState().cash));
     if (!deposit.ok) {
       await uiCallbacks.narrate(COPY.gamble.depositError);
+    } else {
+      uiCallbacks.setGambleLog(COPY.gamble.depositOk(deposit.amount));
+      uiCallbacks.showGambleDelta?.({
+        title: '筹码已存入',
+        before: deposit.beforeState,
+        after: deposit.afterState,
+      });
     }
 
     uiCallbacks.updateHUD();
@@ -312,13 +324,13 @@ async function runFriendLinkBranch(branch) {
     await uiCallbacks.narrateSequential(branch.gambleReady);
 
     saveBookmark('c1_first_choice');
-    const first = await uiCallbacks.showChoices(
-      [
-        { id: 'try', label: branch.firstChoice.try, primary: true },
+    const first = await showRedButtonChoice({
+      prompt: branch.firstChoice.prompt,
+      primaryLabel: branch.firstChoice.try,
+      altChoices: [
         { id: 'rules', label: branch.firstChoice.rules },
       ],
-      branch.firstChoice.prompt,
-    );
+    });
 
     if (first === 'rules') {
       await showRules(branch);
@@ -331,18 +343,43 @@ async function runFriendLinkBranch(branch) {
   }
 }
 
+function showRedButtonChoice({
+  prompt = '',
+  buttonId = 'press',
+  resolveId = buttonId,
+  primaryLabel = COPY.buttons?.gambleOnce || '按一下',
+  altChoices = [],
+} = {}) {
+  return uiCallbacks.showGambleChoice({
+    prompt,
+    buttonId,
+    resolveId,
+    primaryLabel,
+    altChoices,
+  });
+}
+
+function snapshotEconomy() {
+  return {
+    cash: getState().cash,
+    virtualBalance: getState().virtualBalance,
+    debt: Math.round(getDebt()),
+  };
+}
+
 async function showRules(branch) {
   await uiCallbacks.narrate(`**${branch.rules.title}**`);
   await uiCallbacks.narrateSequential(branch.rules.body);
   saveBookmark('c1_after_rules');
 
-  const pick = await uiCallbacks.showChoices(
-    [
-      { id: 'continue', label: branch.rules.continue, primary: true },
+  const pick = await showRedButtonChoice({
+    prompt: '看完以后，你还想继续吗？',
+    primaryLabel: branch.rules.continue,
+    altChoices: [
       { id: 'quit', label: branch.rules.quit },
     ],
-    '看完以后，你还想继续吗？',
-  );
+    resolveId: 'continue',
+  });
 
   if (pick === 'quit') {
     await uiCallbacks.narrateSequential(branch.rulesQuit);
@@ -356,13 +393,17 @@ async function showRules(branch) {
 async function runPressSequence(branch) {
   await doScriptedPress(branch.press1, 50);
   saveBookmark('c1_after_press1');
-  let pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press1.again, primary: true },
-    { id: 'stop', label: branch.press1.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '手还停在按钮附近。要继续吗？',
+    primaryLabel: branch.press1.again,
+    altChoices: [
+      { id: 'stop', label: branch.press1.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter1);
-    await showEarlyEnding('stop_after_1', 'c1_after_press1');
+    await showEarlyEnding('stop_after_1', 'c1_after_press1', true);
     return;
   }
 
@@ -372,13 +413,17 @@ async function runPressSequence(branch) {
 async function continueAfterPress1(branch) {
   await doScriptedPress(branch.press2, 80);
   saveBookmark('c1_after_press2');
-  const pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press2.again, primary: true },
-    { id: 'stop', label: branch.press2.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '数字还在跳，你已经开始替它找理由了。',
+    primaryLabel: branch.press2.again,
+    altChoices: [
+      { id: 'stop', label: branch.press2.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter2);
-    await showEarlyEnding('stop_after_2', 'c1_after_press2');
+    await showEarlyEnding('stop_after_2', 'c1_after_press2', true);
     return;
   }
 
@@ -388,13 +433,17 @@ async function continueAfterPress1(branch) {
 async function continueAfterPress2(branch) {
   await doScriptedPress(branch.press3, -120);
   saveBookmark('c1_after_press3');
-  const pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press3.again, primary: true },
-    { id: 'stop', label: branch.press3.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '输掉以后，按钮反而离你更近了。',
+    primaryLabel: branch.press3.again,
+    altChoices: [
+      { id: 'stop', label: branch.press3.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter3);
-    await showEarlyEnding('stop_after_3', 'c1_after_press3');
+    await showEarlyEnding('stop_after_3', 'c1_after_press3', true);
     return;
   }
 
@@ -405,17 +454,18 @@ async function showColleagueDecision(branch) {
   await uiCallbacks.narrateSequential(branch.colleague);
   saveBookmark('c1_colleague');
 
-  const pick = await uiCallbacks.showChoices(
-    [
-      { id: 'oneMore', label: branch.afterColleague.oneMore, primary: true },
+  const pick = await showRedButtonChoice({
+    prompt: branch.afterColleague.prompt,
+    primaryLabel: branch.afterColleague.oneMore,
+    altChoices: [
       { id: 'quit', label: branch.afterColleague.quit },
     ],
-    branch.afterColleague.prompt,
-  );
+    resolveId: 'oneMore',
+  });
 
   if (pick === 'quit') {
     await uiCallbacks.narrateSequential(branch.quitAfterColleague);
-    await showEarlyEnding('quit_colleague', 'c1_colleague');
+    await showEarlyEnding('quit_colleague', 'c1_colleague', true);
     return;
   }
 
@@ -425,6 +475,7 @@ async function showColleagueDecision(branch) {
 
 async function doScriptedPress(pressCopy, delta) {
   const state = getState();
+  const before = snapshotEconomy();
   state.stats.gambleCount += 1;
   state.flags.gamble_count = (state.flags.gamble_count || 0) + 1;
   state.flags.gamble_opened = true;
@@ -442,6 +493,18 @@ async function doScriptedPress(pressCopy, delta) {
 
   uiCallbacks.renderWheelResult(pressCopy.result);
   uiCallbacks.setGambleLog(pressCopy.result);
+  uiCallbacks.showGambleDelta?.({
+    title: pressCopy.result,
+    before,
+    after: snapshotEconomy(),
+    extras: delta >= 0
+      ? [{
+        label: '心情',
+        text: `${COPY.mood.addiction || '上瘾'} +1`,
+        tone: 'good',
+      }]
+      : [],
+  });
   uiCallbacks.updateHUD();
   uiCallbacks.updateGambleButtons();
   await uiCallbacks.narrateSequential(pressCopy.lines);
@@ -455,20 +518,25 @@ async function runGambleAgainBranch(branch) {
   uiCallbacks.openWindow('gamble');
   await uiCallbacks.narrateSequential(branch.intro);
 
-  const choice = await uiCallbacks.showChoices(
-    [
-      { id: 'press', label: branch.choices.press, primary: true },
+  const choice = await showRedButtonChoice({
+    prompt: branch.prompt,
+    primaryLabel: branch.choices.press,
+    altChoices: [
       { id: 'store', label: branch.choices.store },
       { id: 'close', label: branch.choices.close },
     ],
-    branch.prompt,
-  );
+  });
 
   if (choice === 'store') {
     const amount = Math.min(300, getState().cash);
     const result = depositToMachine(amount);
     if (result.ok) {
       uiCallbacks.setGambleLog(COPY.gamble.depositOk(result.amount));
+      uiCallbacks.showGambleDelta?.({
+        title: '筹码已存入',
+        before: result.beforeState,
+        after: result.afterState,
+      });
       uiCallbacks.notify('机器', COPY.gamble.depositNotify(result.amount));
       uiCallbacks.updateHUD();
       await uiCallbacks.narrateSequential(branch.storeLines);
@@ -583,20 +651,25 @@ async function runGambleBigBranch(branch) {
   }
 
   uiCallbacks.setGambleLog(COPY.gamble.depositOk(deposit.amount));
+  uiCallbacks.showGambleDelta?.({
+    title: '筹码已存入',
+    before: deposit.beforeState,
+    after: deposit.afterState,
+  });
   uiCallbacks.updateHUD();
   await uiCallbacks.narrate(`你先往机器里压了 ¥${deposit.amount}。这一次你不想玩“小打小闹”。`);
 
-  let spinCount = 1;
-  if (getState().flags.triple_unlocked) {
-    const mode = await uiCallbacks.showChoices(
-      [
-        { id: 'once', label: branch.modeChoices.once },
-        { id: 'triple', label: branch.modeChoices.triple, primary: true },
-      ],
-      branch.modePrompt,
-    );
-    spinCount = mode === 'triple' ? 3 : 1;
-  }
+  const hasTriple = getState().flags.triple_unlocked;
+  const mode = await showRedButtonChoice({
+    prompt: branch.modePrompt,
+    buttonId: hasTriple ? 'triple' : 'press',
+    resolveId: hasTriple ? 'triple' : 'once',
+    primaryLabel: hasTriple ? branch.modeChoices.triple : branch.modeChoices.once,
+    altChoices: hasTriple
+      ? [{ id: 'once', label: branch.modeChoices.once }]
+      : [],
+  });
+  const spinCount = mode === 'triple' ? 3 : 1;
 
   const gambleResult = await executeGamble(spinCount);
   if (gambleResult.ok) {
@@ -752,13 +825,13 @@ async function runOneMoreGambleBranch(branch) {
   await uiCallbacks.narrateSequential(branch.pick);
   uiCallbacks.openWindow('gamble');
 
-  const choice = await uiCallbacks.showChoices(
-    [
-      { id: 'press', label: branch.choices.press, primary: true },
+  const choice = await showRedButtonChoice({
+    prompt: branch.prompt,
+    primaryLabel: branch.choices.press,
+    altChoices: [
       { id: 'stop', label: branch.choices.stop },
     ],
-    branch.prompt,
-  );
+  });
 
   if (choice === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopLines);
@@ -793,6 +866,18 @@ async function executeGamble(spinCount) {
     netDelta += spin.delta;
     uiCallbacks.renderWheelResult(spin.segment.label);
     uiCallbacks.setGambleLog(spin.message);
+    uiCallbacks.showGambleDelta?.({
+      title: spin.segment.label,
+      before: spin.beforeState,
+      after: spin.afterState,
+      extras: spin.moodGained
+        ? [{
+          label: '心情',
+          text: `${COPY.mood[spin.moodGained] || spin.moodGained} +1`,
+          tone: spin.moodGained === 'anxiety' ? 'warn' : 'good',
+        }]
+        : [],
+    });
     play(spin.delta >= 0 ? 'win' : 'loss');
     if (spin.moodGained) {
       addMoodFeedback(spin.moodGained);
@@ -817,7 +902,8 @@ async function launchFinalDecision() {
 
   setEnding(endingId);
   saveLastEnding(endingId);
-  uiCallbacks.showEndingScreen(endingId, COPY.endings[endingId]);
+  uiCallbacks.clearSavedRun?.();
+  uiCallbacks.showEndingScreen(endingId, resolveEndingCopy(endingId, state) || COPY.endings[endingId]);
 }
 
 function appendMessages(channel, messages) {
@@ -846,6 +932,7 @@ function saveBookmark(id) {
   const snapshot = exportState();
   if (snapshot.story) {
     snapshot.story.bookmark = null;
+    snapshot.story.cycleStartSave = null;
   }
   state.story.bookmark = {
     id,
@@ -860,11 +947,12 @@ async function showEarlyEnding(endingKey, rewindBookmark, canContinueCycle = fal
 
   await uiCallbacks.narrate(COPY.cycles[1].demoEndPrompt);
   const pick = await uiCallbacks.showChoices([
-    { id: 'rewind', label: COPY.narrative.choices.rewind, primary: true },
-    { id: 'menu', label: COPY.narrative.choices.mainMenu },
     ...(canContinueCycle
-      ? [{ id: 'continue', label: '进入周期 2' }]
-      : [{ id: 'continue_line', label: COPY.narrative.choices.continueDemo }]),
+      ? [{ id: 'continue', label: '继续进入第二周', primary: true }]
+      : []),
+    { id: 'rewind', label: COPY.narrative.choices.rewind, primary: !canContinueCycle },
+    { id: 'continue_line', label: COPY.narrative.choices.continueDemo },
+    { id: 'menu', label: COPY.narrative.choices.mainMenu },
   ]);
 
   if (pick === 'rewind') {
@@ -872,7 +960,13 @@ async function showEarlyEnding(endingKey, rewindBookmark, canContinueCycle = fal
     return;
   }
 
+  if (pick === 'menu') {
+    location.reload();
+    return;
+  }
+
   if (pick === 'continue' && canContinueCycle) {
+    await uiCallbacks.narrate(COPY.cycles[1].branches.friend_link.cycleEndHint);
     endCycle();
     uiCallbacks.updateHUD();
     await beginCycle();
@@ -952,13 +1046,13 @@ function restoreCycle1BookmarkWindows(branch) {
 }
 
 async function resumeCycle1FirstChoice(branch) {
-  const first = await uiCallbacks.showChoices(
-    [
-      { id: 'try', label: branch.firstChoice.try, primary: true },
+  const first = await showRedButtonChoice({
+    prompt: branch.firstChoice.prompt,
+    primaryLabel: branch.firstChoice.try,
+    altChoices: [
       { id: 'rules', label: branch.firstChoice.rules },
     ],
-    branch.firstChoice.prompt,
-  );
+  });
 
   if (first === 'rules') {
     await showRules(branch);
@@ -972,13 +1066,14 @@ async function resumeCycle1AfterRules(branch) {
   await uiCallbacks.narrate(`**${branch.rules.title}**`);
   await uiCallbacks.narrateSequential(branch.rules.body);
 
-  const pick = await uiCallbacks.showChoices(
-    [
-      { id: 'continue', label: branch.rules.continue, primary: true },
+  const pick = await showRedButtonChoice({
+    prompt: '看完以后，你还想继续吗？',
+    primaryLabel: branch.rules.continue,
+    altChoices: [
       { id: 'quit', label: branch.rules.quit },
     ],
-    '看完以后，你还想继续吗？',
-  );
+    resolveId: 'continue',
+  });
 
   if (pick === 'quit') {
     await uiCallbacks.narrateSequential(branch.rulesQuit);
@@ -994,13 +1089,17 @@ async function resumeCycle1AfterPress1(branch) {
   uiCallbacks.setGambleLog(branch.press1.result);
   await uiCallbacks.narrateSequential(branch.press1.lines);
 
-  const pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press1.again, primary: true },
-    { id: 'stop', label: branch.press1.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '手还停在按钮附近。要继续吗？',
+    primaryLabel: branch.press1.again,
+    altChoices: [
+      { id: 'stop', label: branch.press1.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter1);
-    await showEarlyEnding('stop_after_1', 'c1_after_press1');
+    await showEarlyEnding('stop_after_1', 'c1_after_press1', true);
     return;
   }
 
@@ -1012,13 +1111,17 @@ async function resumeCycle1AfterPress2(branch) {
   uiCallbacks.setGambleLog(branch.press2.result);
   await uiCallbacks.narrateSequential(branch.press2.lines);
 
-  const pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press2.again, primary: true },
-    { id: 'stop', label: branch.press2.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '数字还在跳，你已经开始替它找理由了。',
+    primaryLabel: branch.press2.again,
+    altChoices: [
+      { id: 'stop', label: branch.press2.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter2);
-    await showEarlyEnding('stop_after_2', 'c1_after_press2');
+    await showEarlyEnding('stop_after_2', 'c1_after_press2', true);
     return;
   }
 
@@ -1030,13 +1133,17 @@ async function resumeCycle1AfterPress3(branch) {
   uiCallbacks.setGambleLog(branch.press3.result);
   await uiCallbacks.narrateSequential(branch.press3.lines);
 
-  const pick = await uiCallbacks.showChoices([
-    { id: 'again', label: branch.press3.again, primary: true },
-    { id: 'stop', label: branch.press3.stop },
-  ]);
+  const pick = await showRedButtonChoice({
+    prompt: '输掉以后，按钮反而离你更近了。',
+    primaryLabel: branch.press3.again,
+    altChoices: [
+      { id: 'stop', label: branch.press3.stop },
+    ],
+    resolveId: 'again',
+  });
   if (pick === 'stop') {
     await uiCallbacks.narrateSequential(branch.stopAfter3);
-    await showEarlyEnding('stop_after_3', 'c1_after_press3');
+    await showEarlyEnding('stop_after_3', 'c1_after_press3', true);
     return;
   }
 
@@ -1047,17 +1154,18 @@ async function resumeCycle1Colleague(branch) {
   await uiCallbacks.narrateSequential(branch.colleague);
   saveBookmark('c1_colleague');
 
-  const pick = await uiCallbacks.showChoices(
-    [
-      { id: 'oneMore', label: branch.afterColleague.oneMore, primary: true },
+  const pick = await showRedButtonChoice({
+    prompt: branch.afterColleague.prompt,
+    primaryLabel: branch.afterColleague.oneMore,
+    altChoices: [
       { id: 'quit', label: branch.afterColleague.quit },
     ],
-    branch.afterColleague.prompt,
-  );
+    resolveId: 'oneMore',
+  });
 
   if (pick === 'quit') {
     await uiCallbacks.narrateSequential(branch.quitAfterColleague);
-    await showEarlyEnding('quit_colleague', 'c1_colleague');
+    await showEarlyEnding('quit_colleague', 'c1_colleague', true);
     return;
   }
 
@@ -1110,6 +1218,17 @@ export function advanceCycleManually() {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function createCycleStartSave() {
+  const snapshot = exportState();
+  snapshot.cycleResolved = false;
+  snapshot.flags.card_picked = null;
+  if (snapshot.story) {
+    snapshot.story.bookmark = null;
+    snapshot.story.cycleStartSave = null;
+  }
+  return snapshot;
 }
 
 export { gamble, depositToMachine, withdrawFromMachine, startWorkQTE };

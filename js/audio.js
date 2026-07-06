@@ -1,11 +1,13 @@
-/**
- * 音效 — Web Audio API 程序化合成
- * 无需外部资源
- */
 const STORAGE_KEY = 'biean_mute';
+const SAMPLE_RATE = 22050;
+const FALLBACK_VOLUME = 0.9;
 
 let ctx = null;
 let muted = false;
+let muteBusy = false;
+
+const fallbackUrls = new Map();
+const fallbackPlayers = new Set();
 
 function ensureCtx() {
   if (!ctx) {
@@ -33,14 +35,21 @@ export function setMuted(value) {
     localStorage.setItem(STORAGE_KEY, muted ? '1' : '0');
   } catch { /* ignore */ }
   updateMuteButton();
+  if (muted) {
+    fallbackPlayers.forEach((player) => {
+      try {
+        player.pause();
+        player.currentTime = 0;
+      } catch { /* ignore */ }
+    });
+    fallbackPlayers.clear();
+  }
 }
 
 export function toggleMute() {
   setMuted(!muted);
   if (!muted) play('click');
 }
-
-let muteBusy = false;
 
 export function initAudio() {
   try {
@@ -49,19 +58,26 @@ export function initAudio() {
     muted = false;
   }
   updateMuteButton();
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('#btn-mute')) return;
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('#btn-mute')) return;
     if (muteBusy) return;
     muteBusy = true;
-    try { ensureCtx(); } catch { /* headless / file:// without gesture */ }
+    ensureCtx();
     toggleMute();
-    queueMicrotask(() => { muteBusy = false; });
+    queueMicrotask(() => {
+      muteBusy = false;
+    });
   });
-  document.addEventListener(
-    'click',
-    () => ensureCtx(),
-    { once: true, capture: true },
-  );
+
+  const unlock = () => {
+    ensureCtx();
+    warmFallbackCache();
+  };
+
+  document.addEventListener('click', unlock, { once: true, capture: true });
+  document.addEventListener('keydown', unlock, { once: true, capture: true });
+  document.addEventListener('touchstart', unlock, { once: true, capture: true });
 }
 
 function updateMuteButton() {
@@ -93,10 +109,10 @@ function noise(duration, gain = 0.06) {
   const ac = ensureCtx();
   if (!ac || muted) return;
   const t0 = ac.currentTime;
-  const bufferSize = ac.sampleRate * duration;
+  const bufferSize = Math.max(1, Math.floor(ac.sampleRate * duration));
   const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
   const data = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) {
+  for (let i = 0; i < bufferSize; i += 1) {
     data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
   }
   const src = ac.createBufferSource();
@@ -184,16 +200,250 @@ const SFX = {
   },
 };
 
+const FALLBACK_SFX = {
+  click: [
+    { kind: 'tone', freq: 880, duration: 0.06, type: 'square', gain: 0.22 },
+    { kind: 'tone', freq: 1200, duration: 0.04, type: 'sine', gain: 0.14, delay: 0.02 },
+  ],
+  win: [
+    { kind: 'tone', freq: 523, duration: 0.18, type: 'sine', gain: 0.22, delay: 0 },
+    { kind: 'tone', freq: 659, duration: 0.18, type: 'sine', gain: 0.2, delay: 0.1 },
+    { kind: 'tone', freq: 784, duration: 0.18, type: 'sine', gain: 0.18, delay: 0.2 },
+    { kind: 'tone', freq: 1047, duration: 0.18, type: 'sine', gain: 0.16, delay: 0.3 },
+  ],
+  loss: [
+    { kind: 'tone', freq: 220, duration: 0.25, type: 'sawtooth', gain: 0.2 },
+    { kind: 'tone', freq: 180, duration: 0.35, type: 'sawtooth', gain: 0.16, delay: 0.08 },
+    { kind: 'noise', duration: 0.15, gain: 0.08, delay: 0.04 },
+  ],
+  notify: [
+    { kind: 'tone', freq: 660, duration: 0.08, type: 'sine', gain: 0.2 },
+    { kind: 'tone', freq: 880, duration: 0.12, type: 'sine', gain: 0.16, delay: 0.08 },
+  ],
+  dayEnd: [
+    { kind: 'tone', freq: 392, duration: 0.3, type: 'triangle', gain: 0.18 },
+    { kind: 'tone', freq: 294, duration: 0.5, type: 'triangle', gain: 0.15, delay: 0.25 },
+  ],
+  start: [
+    { kind: 'tone', freq: 262, duration: 0.16, type: 'triangle', gain: 0.18, delay: 0 },
+    { kind: 'tone', freq: 392, duration: 0.16, type: 'triangle', gain: 0.16, delay: 0.08 },
+    { kind: 'tone', freq: 523, duration: 0.16, type: 'triangle', gain: 0.14, delay: 0.16 },
+    { kind: 'tone', freq: 659, duration: 0.16, type: 'triangle', gain: 0.12, delay: 0.24 },
+  ],
+  cardPick: [
+    { kind: 'tone', freq: 740, duration: 0.06, type: 'square', gain: 0.16 },
+    { kind: 'tone', freq: 980, duration: 0.08, type: 'triangle', gain: 0.14, delay: 0.04 },
+  ],
+  windowOpen: [
+    { kind: 'tone', freq: 520, duration: 0.08, type: 'square', gain: 0.14 },
+    { kind: 'tone', freq: 700, duration: 0.1, type: 'triangle', gain: 0.12, delay: 0.03 },
+  ],
+  windowClose: [
+    { kind: 'tone', freq: 320, duration: 0.09, type: 'triangle', gain: 0.14 },
+  ],
+  windowMinimize: [
+    { kind: 'tone', freq: 410, duration: 0.06, type: 'triangle', gain: 0.12 },
+    { kind: 'tone', freq: 280, duration: 0.08, type: 'triangle', gain: 0.1, delay: 0.04 },
+  ],
+  workHit: [
+    { kind: 'tone', freq: 660, duration: 0.05, type: 'square', gain: 0.14 },
+  ],
+  workMiss: [
+    { kind: 'tone', freq: 220, duration: 0.08, type: 'sawtooth', gain: 0.12 },
+  ],
+  tension: [
+    { kind: 'tone', freq: 55, duration: 2.6, type: 'sine', gain: 0.08, attack: 0.8, release: 0.8 },
+  ],
+  endingGood: [
+    { kind: 'tone', freq: 392, duration: 0.35, type: 'sine', gain: 0.18, delay: 0 },
+    { kind: 'tone', freq: 494, duration: 0.35, type: 'sine', gain: 0.16, delay: 0.15 },
+    { kind: 'tone', freq: 587, duration: 0.35, type: 'sine', gain: 0.14, delay: 0.3 },
+    { kind: 'tone', freq: 784, duration: 0.35, type: 'sine', gain: 0.12, delay: 0.45 },
+  ],
+  endingBad: [
+    { kind: 'tone', freq: 130, duration: 0.6, type: 'sawtooth', gain: 0.22 },
+    { kind: 'tone', freq: 98, duration: 0.9, type: 'sawtooth', gain: 0.18, delay: 0.2 },
+    { kind: 'noise', duration: 0.4, gain: 0.08, delay: 0.12 },
+  ],
+  gamble: [
+    { kind: 'tone', freq: 440, duration: 0.05, type: 'square', gain: 0.18 },
+    { kind: 'tone', freq: 330, duration: 0.08, type: 'triangle', gain: 0.14, delay: 0.04 },
+  ],
+};
+
 export function play(name) {
   try {
-    SFX[name]?.();
+    const audioCtx = ensureCtx();
+    if (audioCtx?.state === 'running') {
+      SFX[name]?.();
+      return;
+    }
+    playFallback(name);
+  } catch {
+    playFallback(name);
+  }
+}
+
+export function bindButtonSounds() {
+  document.addEventListener('click', (event) => {
+    const btn = event.target.closest('.btn, .gamble-btn, .taskbar-app, .file-card');
+    if (btn && !btn.disabled) play('click');
+  }, true);
+}
+
+function warmFallbackCache() {
+  ['click', 'notify', 'gamble'].forEach((name) => {
+    if (!fallbackUrls.has(name)) {
+      fallbackUrls.set(name, renderFallbackUrl(FALLBACK_SFX[name]));
+    }
+  });
+}
+
+function playFallback(name) {
+  if (muted || typeof Audio !== 'function') return;
+  const clip = FALLBACK_SFX[name];
+  if (!clip) return;
+
+  let url = fallbackUrls.get(name);
+  if (!url) {
+    url = renderFallbackUrl(clip);
+    fallbackUrls.set(name, url);
+  }
+
+  try {
+    const player = new Audio(url);
+    player.volume = FALLBACK_VOLUME;
+    player.preload = 'auto';
+    const cleanup = () => {
+      fallbackPlayers.delete(player);
+    };
+    player.addEventListener('ended', cleanup, { once: true });
+    player.addEventListener('pause', cleanup, { once: true });
+    fallbackPlayers.add(player);
+    const pending = player.play();
+    if (pending?.catch) {
+      pending.catch(cleanup);
+    }
   } catch { /* ignore audio errors */ }
 }
 
-/** 绑定所有按钮点击音效 */
-export function bindButtonSounds() {
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('.btn, .gamble-btn, .taskbar-app, .file-card');
-    if (btn && !btn.disabled) play('click');
-  }, true);
+function renderFallbackUrl(events) {
+  const totalSeconds = events.reduce(
+    (max, event) => Math.max(max, (event.delay || 0) + event.duration),
+    0,
+  ) + 0.06;
+  const sampleCount = Math.max(1, Math.ceil(totalSeconds * SAMPLE_RATE));
+  const mix = new Float32Array(sampleCount);
+
+  events.forEach((event) => {
+    if (event.kind === 'noise') {
+      mixNoise(mix, event);
+    } else {
+      mixTone(mix, event);
+    }
+  });
+
+  const wav = encodeWav(mix, SAMPLE_RATE);
+  if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function' && typeof Blob !== 'undefined') {
+    return URL.createObjectURL(new Blob([wav], { type: 'audio/wav' }));
+  }
+  return bufferToDataUrl(wav);
+}
+
+function mixTone(buffer, event) {
+  const start = Math.floor((event.delay || 0) * SAMPLE_RATE);
+  const durationSamples = Math.max(1, Math.floor(event.duration * SAMPLE_RATE));
+  const attack = Math.min(event.attack || 0.012, event.duration / 2);
+  const release = Math.min(event.release || 0.05, event.duration / 2);
+
+  for (let i = 0; i < durationSamples && start + i < buffer.length; i += 1) {
+    const t = i / SAMPLE_RATE;
+    const progress = i / durationSamples;
+    const freq = event.slideTo
+      ? event.freq + (event.slideTo - event.freq) * progress
+      : event.freq;
+    const env = envelope(t, event.duration, attack, release);
+    const sample = waveform(event.type || 'sine', t * freq);
+    buffer[start + i] += sample * (event.gain || 0.12) * env;
+  }
+}
+
+function mixNoise(buffer, event) {
+  const start = Math.floor((event.delay || 0) * SAMPLE_RATE);
+  const durationSamples = Math.max(1, Math.floor(event.duration * SAMPLE_RATE));
+  const release = Math.min(event.release || 0.05, event.duration / 2);
+
+  for (let i = 0; i < durationSamples && start + i < buffer.length; i += 1) {
+    const t = i / SAMPLE_RATE;
+    const env = envelope(t, event.duration, 0.005, release);
+    buffer[start + i] += (Math.random() * 2 - 1) * (event.gain || 0.08) * env;
+  }
+}
+
+function envelope(t, duration, attack, release) {
+  const fadeIn = attack > 0 ? Math.min(1, t / attack) : 1;
+  const fadeOut = release > 0 ? Math.min(1, (duration - t) / release) : 1;
+  return Math.max(0, Math.min(fadeIn, fadeOut));
+}
+
+function waveform(type, phase) {
+  const turn = phase - Math.floor(phase);
+  const sine = Math.sin(2 * Math.PI * turn);
+  switch (type) {
+    case 'square':
+      return sine >= 0 ? 1 : -1;
+    case 'triangle':
+      return 2 * Math.abs(2 * turn - 1) - 1;
+    case 'sawtooth':
+      return 2 * turn - 1;
+    default:
+      return sine;
+  }
+}
+
+function encodeWav(floatData, sampleRate) {
+  const bytesPerSample = 2;
+  const blockAlign = bytesPerSample;
+  const byteRate = sampleRate * blockAlign;
+  const dataLength = floatData.length * bytesPerSample;
+  const buffer = new ArrayBuffer(44 + dataLength);
+  const view = new DataView(buffer);
+
+  writeAscii(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataLength, true);
+  writeAscii(view, 8, 'WAVE');
+  writeAscii(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, byteRate, true);
+  view.setUint16(32, blockAlign, true);
+  view.setUint16(34, 16, true);
+  writeAscii(view, 36, 'data');
+  view.setUint32(40, dataLength, true);
+
+  let offset = 44;
+  for (let i = 0; i < floatData.length; i += 1) {
+    const sample = Math.max(-1, Math.min(1, floatData[i]));
+    view.setInt16(offset, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true);
+    offset += 2;
+  }
+
+  return buffer;
+}
+
+function writeAscii(view, offset, text) {
+  for (let i = 0; i < text.length; i += 1) {
+    view.setUint8(offset + i, text.charCodeAt(i));
+  }
+}
+
+function bufferToDataUrl(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return `data:audio/wav;base64,${btoa(binary)}`;
 }

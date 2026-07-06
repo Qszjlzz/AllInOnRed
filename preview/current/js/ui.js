@@ -11,6 +11,7 @@ let windowStack = 20;
 let uiCallbacks = null;
 /** @type {Record<string, boolean>} */
 const windowMinimized = {};
+let activeGambleChoice = null;
 
 const MOOD_ART = {
   addiction: 'assets/pixel/mood-addiction.png',
@@ -241,20 +242,29 @@ export function updateGambleButtons() {
   const gambleBtn = document.getElementById('btn-gamble-once');
   const tripleBtn = document.getElementById('btn-triple');
   const tenBtn = document.getElementById('btn-ten');
+  const depositBtn = document.getElementById('btn-deposit-all');
+  const withdrawBtn = document.getElementById('btn-withdraw');
   const endBtn = document.getElementById('btn-end-cycle');
+  const armedChoice = activeGambleChoice?.buttonId || null;
+  const storyArmed = Boolean(armedChoice);
 
   if (gambleBtn) {
-    gambleBtn.disabled = !canAct();
+    gambleBtn.disabled = storyArmed ? armedChoice !== 'press' : !canAct();
     gambleBtn.classList.toggle('hidden', s.stats.gambleCount < 0);
+    gambleBtn.classList.toggle('gamble-btn-armed', storyArmed && armedChoice === 'press');
   }
   if (tripleBtn) {
     tripleBtn.classList.toggle('hidden', !s.flags.triple_unlocked);
-    tripleBtn.disabled = !canAct();
+    tripleBtn.disabled = storyArmed ? armedChoice !== 'triple' : !canAct();
+    tripleBtn.classList.toggle('gamble-btn-armed', storyArmed && armedChoice === 'triple');
   }
   if (tenBtn) {
     tenBtn.classList.toggle('hidden', !s.flags.ten_unlocked);
-    tenBtn.disabled = !canAct();
+    tenBtn.disabled = storyArmed ? armedChoice !== 'ten' : !canAct();
+    tenBtn.classList.toggle('gamble-btn-armed', storyArmed && armedChoice === 'ten');
   }
+  if (depositBtn) depositBtn.disabled = storyArmed || !canAct();
+  if (withdrawBtn) withdrawBtn.disabled = storyArmed || !canAct();
   if (endBtn) endBtn.disabled = !canAct();
 }
 
@@ -343,6 +353,72 @@ export function showChoices(choices, prompt = '') {
       });
       area.appendChild(btn);
     });
+  });
+}
+
+export function isGambleChoiceActive() {
+  return Boolean(activeGambleChoice);
+}
+
+export function triggerGambleChoice(id = 'press') {
+  if (!activeGambleChoice?.finish) return false;
+  if (id !== activeGambleChoice.buttonId) {
+    return true;
+  }
+  activeGambleChoice.finish(activeGambleChoice.resolveId);
+  return true;
+}
+
+export function clearGambleChoice() {
+  activeGambleChoice = null;
+  const prompt = document.getElementById('gamble-story-prompt');
+  if (prompt) {
+    prompt.classList.add('hidden');
+    prompt.innerHTML = '';
+  }
+  updateGambleButtons();
+}
+
+export function showGambleChoice({
+  prompt = '',
+  buttonId = 'press',
+  resolveId = buttonId,
+  primaryLabel = COPY.buttons.gambleOnce,
+  altChoices = [],
+} = {}) {
+  return new Promise((resolve) => {
+    clearGambleChoice();
+    document.getElementById('narrative-choices')?.replaceChildren();
+    openWindow('gamble');
+
+    const panel = document.getElementById('gamble-story-prompt');
+    const finish = (choiceId) => {
+      clearGambleChoice();
+      resolve(choiceId);
+    };
+
+    activeGambleChoice = { buttonId, resolveId, finish };
+    if (panel) {
+      panel.classList.remove('hidden');
+      panel.innerHTML = `
+        <div class="gamble-story-copy">
+          <strong>直接点按钮：${escapeHtml(primaryLabel)}</strong>
+          ${prompt ? `<p>${escapeHtml(prompt)}</p>` : ''}
+        </div>
+        <div class="gamble-story-actions">
+          ${altChoices.map((choice) => `
+            <button type="button" class="btn ${choice.primary ? 'btn-primary' : 'btn-ghost'} btn-sm" data-choice-id="${escapeHtml(choice.id)}">
+              ${escapeHtml(choice.label)}
+            </button>
+          `).join('')}
+        </div>
+      `;
+      panel.querySelectorAll('[data-choice-id]').forEach((button) => {
+        button.addEventListener('click', () => finish(button.dataset.choiceId || ''));
+      });
+    }
+
+    updateGambleButtons();
   });
 }
 
@@ -614,10 +690,12 @@ export function clearChat(channel) {
 }
 
 export function resetTransientView() {
+  clearGambleChoice();
   document.getElementById('narrative-text')?.replaceChildren();
   document.getElementById('narrative-choices')?.replaceChildren();
   document.getElementById('notifications')?.replaceChildren();
   document.getElementById('gamble-log')?.replaceChildren();
+  clearGambleDelta();
 
   const wheel = document.getElementById('wheel-display');
   if (wheel) {
@@ -657,6 +735,7 @@ export function showEndingScreen(endingId, endingCopy) {
       ${e.achievement ? `<p class="achievement">${escapeHtml(e.achievement)}</p>` : ''}
       <h1>${escapeHtml(e.title)}</h1>
       <p class="ending-body">${escapeHtml(e.body)}</p>
+      ${e.bodyExtra ? `<p class="ending-body ending-body-secondary">${escapeHtml(e.bodyExtra)}</p>` : ''}
       <div class="ending-stats">
         <span>${stats.cycles} <strong>${s.cycle}</strong></span>
         <span>${stats.gambles} <strong>${s.stats.gambleCount}</strong></span>
@@ -664,11 +743,17 @@ export function showEndingScreen(endingId, endingCopy) {
         <span>${stats.virtual} <strong>¥${s.virtualBalance}</strong></span>
         <span>${stats.debt} <strong>¥${Math.round(getDebt())}</strong></span>
       </div>
-      <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+      <div class="ending-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+        <button type="button" class="btn btn-ghost" id="btn-menu">${COPY.buttons.menu}</button>
+      </div>
     </div>
   `;
   layer.querySelector('#btn-restart')?.addEventListener('click', () => {
     localStorage.removeItem('biean_save');
+    location.reload();
+  });
+  layer.querySelector('#btn-menu')?.addEventListener('click', () => {
     location.reload();
   });
 }
@@ -690,6 +775,53 @@ export function setGambleLog(text) {
   el.scrollTop = el.scrollHeight;
 }
 
+export function clearGambleDelta() {
+  const el = document.getElementById('gamble-impact');
+  if (!el) return;
+  el.classList.add('hidden');
+  el.innerHTML = '';
+}
+
+export function showGambleDelta({ title = '本次变化', before = null, after = null, extras = [] } = {}) {
+  const el = document.getElementById('gamble-impact');
+  if (!el) return;
+
+  const chips = [];
+  if (before && after) {
+    pushDeltaChip(chips, '现金', (after.cash || 0) - (before.cash || 0));
+    pushDeltaChip(chips, '机器', (after.virtualBalance || 0) - (before.virtualBalance || 0));
+    pushDeltaChip(chips, '待还', (after.debt || 0) - (before.debt || 0), true);
+  }
+  extras.forEach((extra) => {
+    if (!extra?.text) return;
+    chips.push({
+      label: extra.label || '状态',
+      text: extra.text,
+      tone: extra.tone || 'warn',
+    });
+  });
+
+  if (!chips.length) {
+    clearGambleDelta();
+    return;
+  }
+
+  el.classList.remove('hidden');
+  el.innerHTML = `
+    <div class="gamble-impact-title">${escapeHtml(title)}</div>
+    <div class="gamble-impact-chips">
+      ${chips.map((chip) => `
+        <span class="gamble-impact-chip ${escapeHtml(chip.tone)}">
+          <strong>${escapeHtml(chip.label)}</strong>${escapeHtml(chip.text)}
+        </span>
+      `).join('')}
+    </div>
+  `;
+  el.classList.remove('gamble-impact-flash');
+  void el.offsetWidth;
+  el.classList.add('gamble-impact-flash');
+}
+
 export function renderWheelResult(label) {
   const wheel = document.getElementById('wheel-display');
   if (!wheel) return;
@@ -700,6 +832,19 @@ export function renderWheelResult(label) {
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function pushDeltaChip(target, label, delta, reverseTone = false) {
+  if (!delta) return;
+  const tone = reverseTone
+    ? (delta < 0 ? 'good' : 'bad')
+    : (delta > 0 ? 'good' : 'bad');
+  const prefix = delta > 0 ? '+' : '-';
+  target.push({
+    label,
+    text: `${prefix}¥${Math.abs(delta)}`,
+    tone,
+  });
 }
 
 function positionWindow(win) {

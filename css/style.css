@@ -421,9 +421,41 @@ html, body {
     url("../assets/pixel/gamble-btn-pressed.png") center/contain no-repeat,
     #881122;
 }
+.gamble-btn-armed {
+  box-shadow:
+    0 0 0 3px rgba(255, 204, 68, 0.28),
+    0 0 22px rgba(255, 68, 102, 0.85);
+  transform: scale(1.03);
+}
 @keyframes breathe {
   0%, 100% { box-shadow: 0 0 8px rgba(255,68,102,0.4); }
   50% { box-shadow: 0 0 20px rgba(255,68,102,0.75); }
+}
+.gamble-story-prompt {
+  width: min(320px, 100%);
+  margin: 0 auto 10px;
+  padding: 10px 12px;
+  border: 2px solid rgba(255, 204, 68, 0.35);
+  background: rgba(18, 14, 28, 0.9);
+  text-align: left;
+}
+.gamble-story-copy strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--warn);
+  font-size: 11px;
+}
+.gamble-story-copy p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1.5;
+}
+.gamble-story-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
 }
 .wheel-display {
   margin: 10px auto;
@@ -445,6 +477,45 @@ html, body {
 .wheel-display.spin-flash { animation: spinFlash 0.5s ease; }
 @keyframes spinFlash {
   50% { background: rgba(255,204,68,0.2); transform: scale(1.03); }
+}
+.gamble-impact {
+  width: min(320px, 100%);
+  margin: 0 auto 10px;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  background: rgba(18, 14, 28, 0.9);
+  text-align: left;
+}
+.gamble-impact-title {
+  margin-bottom: 8px;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+.gamble-impact-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.gamble-impact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  background: rgba(61, 53, 85, 0.65);
+  font-size: 10px;
+}
+.gamble-impact-chip strong {
+  font-size: 9px;
+  color: var(--text);
+}
+.gamble-impact-chip.good { border-color: var(--success); color: var(--success); }
+.gamble-impact-chip.bad { border-color: var(--danger); color: var(--danger); }
+.gamble-impact-chip.warn { border-color: var(--warn); color: var(--warn); }
+.gamble-impact-flash { animation: gambleImpactFlash 0.28s ease; }
+@keyframes gambleImpactFlash {
+  from { transform: translateY(4px); opacity: 0.55; }
+  to { transform: translateY(0); opacity: 1; }
 }
 .gamble-log {
   max-height: 80px;
@@ -768,6 +839,10 @@ html, body {
 .ending-screen.ending-bad h1 { color: var(--danger); }
 .achievement { color: var(--warn); font-size: 11px; margin-bottom: 8px; }
 .ending-body { text-align: left; line-height: 1.6; margin: 12px 0; font-size: 12px; }
+.ending-body-secondary {
+  color: var(--text-dim);
+  margin-top: 0;
+}
 .ending-stats {
   display: flex;
   flex-wrap: wrap;

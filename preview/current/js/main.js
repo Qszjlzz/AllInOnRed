@@ -23,6 +23,10 @@ import {
   showIntro,
   showTextEntry,
   showFinalDecision,
+  showGambleChoice,
+  showGambleDelta,
+  triggerGambleChoice,
+  isGambleChoiceActive,
   appendChatMessage,
   openWindow,
   setGambleLog,
@@ -67,8 +71,12 @@ function boot() {
     resetTransientView,
     showTextEntry,
     showFinalDecision,
+    showGambleChoice,
+    showGambleDelta,
     getWorkArea: () => document.getElementById('work-area'),
     notify: showNotification,
+    persistCycleStartSave,
+    clearSavedRun,
     onCycleComplete: () => {
       play('dayEnd');
     },
@@ -123,8 +131,16 @@ function tryLoadSave() {
 
 function saveGame() {
   try {
-    if (getState().phase === 'playing') {
-      localStorage.setItem(SAVE_KEY, JSON.stringify(exportState()));
+    if (getState().phase === 'playing' && getState().story?.cycleStartSave) {
+      persistCycleStartSave(getState().story.cycleStartSave);
+    }
+  } catch { /* ignore */ }
+}
+
+function persistCycleStartSave(snapshot = getState().story?.cycleStartSave) {
+  try {
+    if (snapshot) {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
     }
   } catch { /* ignore */ }
 }
@@ -178,9 +194,18 @@ function startDesktopRun(introMessage) {
 }
 
 function bindGambleUI() {
-  document.getElementById('btn-gamble-once')?.addEventListener('click', () => doGamble(1));
-  document.getElementById('btn-triple')?.addEventListener('click', () => doGamble(3));
-  document.getElementById('btn-ten')?.addEventListener('click', () => doGamble(10));
+  document.getElementById('btn-gamble-once')?.addEventListener('click', () => {
+    if (triggerGambleChoice('press')) return;
+    doGamble(1);
+  });
+  document.getElementById('btn-triple')?.addEventListener('click', () => {
+    if (triggerGambleChoice('triple')) return;
+    doGamble(3);
+  });
+  document.getElementById('btn-ten')?.addEventListener('click', () => {
+    if (triggerGambleChoice('ten')) return;
+    doGamble(10);
+  });
 }
 
 async function doGamble(spinCount) {
@@ -219,6 +244,18 @@ async function doGamble(spinCount) {
   for (const r of result.results) {
     renderWheelResult(r.segment.label);
     setGambleLog(r.message);
+    showGambleDelta({
+      title: r.segment.label,
+      before: r.beforeState,
+      after: r.afterState,
+      extras: r.moodGained
+        ? [{
+          label: '心情',
+          text: `${COPY.mood[r.moodGained] || r.moodGained} +1`,
+          tone: r.moodGained === 'anxiety' ? 'warn' : 'good',
+        }]
+        : [],
+    });
     play(r.delta >= 0 ? 'win' : 'loss');
     if (r.moodGained) {
       flashMood(r.moodGained);
@@ -252,10 +289,17 @@ function bindWorkUI() {
 
 function bindDepositUI() {
   document.getElementById('btn-deposit-all')?.addEventListener('click', () => {
+    if (isGambleChoiceActive()) return;
     const s = getState();
+    const before = snapshotEconomy();
     const r = depositToMachine(s.cash);
     if (r.ok) {
       setGambleLog(COPY.gamble.depositOk(r.amount));
+      showGambleDelta({
+        title: '筹码已存入',
+        before,
+        after: r.afterState || snapshotEconomy(),
+      });
       showNotification('赌博机', COPY.gamble.depositNotify(r.amount));
     } else {
       showNotification('赌博机', r.error);
@@ -265,9 +309,16 @@ function bindDepositUI() {
   });
 
   document.getElementById('btn-withdraw')?.addEventListener('click', () => {
+    if (isGambleChoiceActive()) return;
+    const before = snapshotEconomy();
     const r = withdrawFromMachine();
     if (r.ok) {
       setGambleLog(COPY.gamble.withdrawOk(r.amount));
+      showGambleDelta({
+        title: '筹码已取出',
+        before,
+        after: r.afterState || snapshotEconomy(),
+      });
       showNotification('赌博机', COPY.gamble.withdrawNotify(r.amount));
     } else {
       showNotification('赌博机', r.error);
@@ -279,6 +330,14 @@ function bindDepositUI() {
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function snapshotEconomy() {
+  return {
+    cash: getState().cash,
+    virtualBalance: getState().virtualBalance,
+    debt: Math.round(getDebt()),
+  };
 }
 
 document.addEventListener('DOMContentLoaded', boot);

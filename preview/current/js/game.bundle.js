@@ -137,7 +137,7 @@
       mood: { addiction: 0, stable: 0, anxiety: 0, diligent: 0 },
       moodCards: [],
       cycleResolved: false,
-      story: { bookmark: null, node: null },
+      story: { bookmark: null, node: null, cycleStartSave: null },
       flags: {
         intro_done: false,
         gamble_opened: false,
@@ -189,7 +189,7 @@
   function exportState() {
     return JSON.parse(JSON.stringify(state));
   }
-  function spendAp2(n = 1) {
+  function spendAp(n = 1) {
     if (state.ap < n) return false;
     state.ap -= n;
     return true;
@@ -272,12 +272,12 @@
       title: "\u7EA2\u952E\u68AD\u54C8",
       titleEn: "All In on Red",
       theme: "\u522B\u6309\u90A3\u4E2A\u952E",
-      subtitle: "\u50CF\u7D20\u684C\u9762 \xB7 \u4E94\u5468\u671F\u6C89\u8FF7\u53D9\u4E8B \xB7 \u8D4C\u535A\u3001\u5DE5\u4F5C\u4E0E\u56DE\u5BB6\u4E4B\u95F4"
+      subtitle: "\u50CF\u7D20\u684C\u9762\u53D9\u4E8B \xB7 \u5728\u8BF1\u60D1\u3001\u503A\u52A1\u4E0E\u5F52\u5BB6\u4E4B\u95F4\uFF0C\u522B\u628A\u4EBA\u751F\u62BC\u7ED9\u90A3\u9897\u7EA2\u952E"
     },
     intro: {
-      p1: "\u6DF1\u591C\u529E\u516C\u5BA4\u91CC\uFF0C\u5361\u724C\u684C\u9762\u4F1A\u4E0D\u65AD\u5237\u51FA\u4E8B\u4EF6\u3002\u6BCF\u4E2A\u5468\u671F\u4F60\u53EA\u80FD\u628A\u4E00\u5F20\u724C\u653E\u8FDB\u884C\u52A8\u683C\uFF0C\u5176\u4F59\u7684\u53EA\u80FD\u653E\u8FC7\u3002",
-      p2: "\u670B\u53CB\u7684\u94FE\u63A5\u3001\u5DE5\u4F5C\u65E5\u62A5\u3001\u5BB6\u4EBA\u7684\u6D88\u606F\u3001\u8D26\u5355\u548C\u5907\u5FD8\u5F55\uFF0C\u4F1A\u628A\u4F60\u4E00\u70B9\u70B9\u63A8\u5411\u4E0D\u540C\u7684\u591C\u665A\u3002",
-      p3: "\u4F60\u53EF\u4EE5\u5DE5\u4F5C\u3001\u53D6\u94B1\u3001\u7EE7\u7EED\u8D4C\uFF0C\u4E5F\u53EF\u4EE5\u5728\u8FD8\u6765\u5F97\u53CA\u7684\u65F6\u5019\u628A\u624B\u6536\u56DE\u6765\u3002\u95EE\u9898\u662F\uFF0C\u4F60\u4F1A\u5728\u54EA\u4E00\u6B65\u505C\u4E0B\uFF1F",
+      p1: "\u300A\u7EA2\u952E\u68AD\u54C8 / All In on Red\u300B\u662F\u4E00\u6B3E\u50CF\u7D20\u684C\u9762\u53D9\u4E8B\u6E38\u620F\u3002\u6DF1\u591C\u7684\u529E\u516C\u5BA4\u91CC\uFF0C\u4F60\u6536\u5230\u4E00\u4E2A\u540D\u4E3A\u201C\u522B\u6309\u90A3\u4E2A\u952E.html\u201D\u7684\u94FE\u63A5\uFF0C\u5C4F\u5E55\u4E2D\u592E\u53EA\u6709\u4E00\u9897\u53D1\u4EAE\u7684\u7EA2\u6309\u94AE\u3002",
+      p2: "\u63A5\u4E0B\u6765\u7684\u4E94\u4E2A\u5468\u671F\u91CC\uFF0C\u5DE5\u4F5C\u3001\u5BB6\u4EBA\u3001\u8D26\u5355\u548C\u6B32\u671B\u4F1A\u4E0D\u65AD\u628A\u4F60\u62C9\u5411\u4E0D\u540C\u65B9\u5411\u3002\u4F60\u53EF\u4EE5\u8D5A\u94B1\u3001\u8FD8\u503A\u3001\u56DE\u6D88\u606F\uFF0C\u4E5F\u53EF\u4EE5\u4E00\u6B21\u6B21\u628A\u624B\u4F38\u5411\u90A3\u9897\u6309\u94AE\u3002",
+      p3: "\u6BCF\u4E00\u6B21\u6309\u4E0B\uFF0C\u8D62\u7684\u4E0D\u662F\u5B89\u5168\uFF0C\u8F93\u6389\u7684\u4E5F\u4E0D\u53EA\u662F\u94B1\u3002\u5F53\u6309\u94AE\u6BD4\u56DE\u5BB6\u66F4\u8FD1\u7684\u65F6\u5019\uFF0C\u4F60\u8FD8\u80FD\u4E0D\u80FD\u5728\u5F7B\u5E95\u6C89\u4E0B\u53BB\u4E4B\u524D\u505C\u4F4F\uFF1F",
       start: "\u5F00\u59CB\u6E38\u620F",
       continue: "\u7EE7\u7EED\u6E38\u620F",
       newGame: "\u65B0\u6E38\u620F",
@@ -331,7 +331,7 @@
       choices: {
         rewind: "\u56DE\u5230\u4E4B\u524D\uFF0C\u91CD\u65B0\u9009\u62E9",
         mainMenu: "\u8FD4\u56DE\u4E3B\u83DC\u5355",
-        continueDemo: "\u8FDB\u5165\u7ED3\u5C40"
+        continueDemo: "\u6536\u4E0B\u8FD9\u4E2A\u77ED\u7ED3\u5C40"
       }
     },
     cycles: {
@@ -515,7 +515,7 @@
             achievement: "\u6210\u5C31\uFF1A\u88AB\u8FEB\u4E2D\u65AD\u7684\u4EBA"
           }
         },
-        demoEndPrompt: "\u8FD9\u6761\u5206\u652F\u5DF2\u7ECF\u8D70\u5230\u4E86\u4E00\u4E2A\u4E34\u65F6\u7ED3\u5C40\u3002\u4F60\u60F3\u56DE\u5230\u5173\u952E\u8282\u70B9\u91CD\u9009\uFF0C\u8FD8\u662F\u5C31\u8BA9\u8FD9\u4E00\u665A\u505C\u5728\u8FD9\u91CC\uFF1F"
+        demoEndPrompt: "\u8FD9\u4E00\u665A\u53EF\u4EE5\u5148\u505C\u5728\u8FD9\u91CC\uFF0C\u4E5F\u53EF\u4EE5\u5E26\u7740\u8FD9\u6B21\u9009\u62E9\u7EE7\u7EED\u5F80\u540E\u8D70\u3002\u4F60\u60F3\u600E\u4E48\u5904\u7406\u8FD9\u4E2A\u5206\u652F\uFF1F"
       },
       2: {
         title: "\u7B2C\u4E8C\u5468 \xB7 \u4F59\u6E29",
@@ -827,6 +827,7 @@
       withdraw: "\u53D6\u51FA",
       workStart: "\u5F00\u59CB\u7EF4\u62A4",
       memoSave: "\u4FDD\u5B58",
+      menu: "\u8FD4\u56DE\u4E3B\u83DC\u5355",
       restart: "\u91CD\u65B0\u5F00\u59CB",
       muteOn: "\u{1F50A}",
       muteOff: "\u{1F507}"
@@ -935,6 +936,44 @@
         body: "\u4F60\u660E\u660E\u77E5\u9053\u7ED3\u5C40\u662F\u4EC0\u4E48\uFF0C\u8FD8\u662F\u6309\u4E86\u4E0B\u53BB\u3002\u91CD\u6765\u7684\u8BB0\u5FC6\u6CA1\u6709\u6551\u4F60\uFF0C\u53CD\u800C\u8BA9\u4F60\u66F4\u4F1A\u66FF\u81EA\u5DF1\u627E\u501F\u53E3\u3002\u6700\u53EF\u6015\u7684\u4ECE\u6765\u4E0D\u662F\u4E0D\u77E5\u9053\uFF0C\u800C\u662F\u77E5\u9053\u4EE5\u540E\u8FD8\u613F\u610F\u7EE7\u7EED\u3002"
       }
     },
+    endingEpilogues: {
+      perfect: {
+        family: "\u56DE\u5230\u5BB6\u65F6\uFF0C\u7384\u5173\u90A3\u76CF\u706F\u8FD8\u4EAE\u7740\u3002\u4F60\u5FFD\u7136\u610F\u8BC6\u5230\uFF0C\u771F\u6B63\u6CA1\u677E\u624B\u8FC7\u7684\u4E0D\u662F\u6309\u94AE\uFF0C\u800C\u662F\u4E00\u76F4\u6709\u4EBA\u5728\u7B49\u4F60\u3002",
+        debt: "\u8D26\u5355\u5F53\u7136\u4E0D\u4F1A\u56E0\u4E3A\u4F60\u4ECA\u665A\u505C\u624B\u5C31\u6D88\u5931\uFF0C\u4F46\u5B83\u7EC8\u4E8E\u91CD\u65B0\u53D8\u56DE\u4E86\u4E00\u4EF6\u53EF\u4EE5\u4E00\u7B14\u4E00\u7B14\u53BB\u5904\u7406\u7684\u4E8B\u3002",
+        work: "\u5DE5\u4F4D\u4E0A\u7684\u5149\u6807\u8FD8\u505C\u5728\u6CA1\u5199\u5B8C\u7684\u90A3\u884C\u5B57\u4E0A\uFF0C\u4F46\u8FD9\u4E00\u6B21\u4F60\u77E5\u9053\uFF0C\u660E\u5929\u53EF\u4EE5\u7528\u6E05\u9192\u53BB\u6536\u62FE\u6B8B\u5C40\u3002",
+        alone: "\u591C\u91CC\u8FD8\u662F\u5F88\u5B89\u9759\uFF0C\u53EA\u662F\u90A3\u79CD\u53EA\u80FD\u9760\u4E0B\u4E00\u6B21\u8D77\u4F0F\u6491\u4F4F\u81EA\u5DF1\u7684\u611F\u89C9\uFF0C\u7EC8\u4E8E\u6CA1\u6709\u518D\u538B\u8FC7\u6765\u3002"
+      },
+      awaken: {
+        family: "\u4F60\u60F3\u8D77\u90A3\u4E9B\u6CA1\u53CA\u65F6\u56DE\u6389\u7684\u6D88\u606F\uFF0C\u77E5\u9053\u81EA\u5DF1\u8981\u8865\u7684\u4E0D\u53EA\u662F\u94B1\uFF0C\u8FD8\u6709\u665A\u4E86\u5F88\u591A\u62CD\u7684\u56DE\u5E94\u3002",
+        debt: "\u8D26\u5355\u8FD8\u6446\u5728\u90A3\u513F\uFF0C\u4E0D\u518D\u50CF\u4E00\u4E2A\u4F1A\u88AB\u6309\u94AE\u541E\u6389\u7684\u5F71\u5B50\uFF0C\u800C\u50CF\u4E00\u4EF6\u4F60\u8FDF\u65E9\u5F97\u4EB2\u624B\u5904\u7406\u7684\u4E8B\u3002",
+        work: "\u529E\u516C\u684C\u4E0A\u7684\u7EF4\u62A4\u5355\u8FD8\u4EAE\u7740\uFF0C\u50CF\u73B0\u5B9E\u7559\u4E0B\u7684\u4E00\u5F20\u6536\u636E\uFF1A\u4F60\u603B\u5F97\u4E00\u70B9\u70B9\u628A\u6F0F\u6389\u7684\u65E5\u5B50\u8865\u56DE\u53BB\u3002",
+        alone: "\u7A97\u5916\u8FD8\u662F\u540C\u4E00\u7247\u591C\u8272\uFF0C\u53EA\u662F\u4F60\u7EC8\u4E8E\u80AF\u627F\u8BA4\uFF0C\u771F\u6B63\u88AB\u638F\u7A7A\u7684\u4ECE\u6765\u4E0D\u53EA\u662F\u4F59\u989D\u3002"
+      },
+      stop_loss: {
+        family: "\u6700\u96BE\u8865\u7684\u4E5F\u8BB8\u4E0D\u662F\u94B1\uFF0C\u800C\u662F\u90A3\u4E9B\u88AB\u4F60\u4E00\u62D6\u518D\u62D6\u7684\u996D\u70B9\u3001\u665A\u5B89\u548C\u672C\u8BE5\u53CA\u65F6\u56DE\u51FA\u53BB\u7684\u8BDD\u3002",
+        debt: "\u4F60\u770B\u7740\u90A3\u4E9B\u6570\u5B57\uFF0C\u7B2C\u4E00\u6B21\u4E0D\u518D\u5E7B\u60F3\u5B83\u4EEC\u4F1A\u81EA\u5DF1\u6D88\u5931\uFF0C\u800C\u662F\u5F00\u59CB\u60F3\u8BE5\u4ECE\u54EA\u4E00\u7B14\u5148\u8865\u8D77\u3002",
+        work: "\u684C\u9762\u4E0A\u7684\u7A97\u53E3\u8FD8\u4E71\u7740\uFF0C\u50CF\u4E00\u6574\u665A\u6CA1\u6536\u62FE\u5B8C\u7684\u751F\u6D3B\u3002\u597D\u6D88\u606F\u662F\uFF0C\u5B83\u4EEC\u81F3\u5C11\u8FD8\u5728\u73B0\u5B9E\u91CC\u3002",
+        alone: "\u505C\u624B\u6CA1\u6709\u8BA9\u591C\u665A\u7ACB\u523B\u53D8\u8F7B\uFF0C\u53EA\u662F\u8BA9\u4F60\u7EC8\u4E8E\u7AD9\u5728\u4E86\u8FD8\u80FD\u6162\u6162\u5F80\u56DE\u8D70\u7684\u5730\u65B9\u3002"
+      },
+      memory: {
+        family: "\u90A3\u53E5\u8BDD\u50CF\u662F\u9694\u7740\u5F88\u8FDC\u624D\u91CD\u65B0\u843D\u56DE\u8033\u8FB9\uFF0C\u63D0\u9192\u4F60\u8FD8\u6709\u4E00\u4E9B\u4EBA\u548C\u706F\u706B\uFF0C\u66FE\u7ECF\u5DEE\u70B9\u88AB\u4F60\u4E00\u5E76\u8F93\u6389\u3002",
+        debt: "\u4F60\u5FFD\u7136\u660E\u767D\uFF0C\u81EA\u5DF1\u771F\u6B63\u6015\u7684\u4ECE\u6765\u4E0D\u53EA\u662F\u4E8F\u635F\uFF0C\u800C\u662F\u628A\u6240\u6709\u540E\u679C\u90FD\u7559\u7ED9\u660E\u5929\u7684\u81EA\u5DF1\u3002",
+        work: "\u5C4F\u5E55\u4E0A\u8FD8\u505C\u7740\u719F\u6089\u7684\u7A97\u53E3\uFF0C\u4F60\u5374\u7B2C\u4E00\u6B21\u89C9\u5F97\uFF0C\u91CD\u590D\u4E0D\u662F\u547D\u8FD0\uFF0C\u53EA\u662F\u4F60\u4E4B\u524D\u4E00\u76F4\u6CA1\u6709\u505C\u4E0B\u3002",
+        alone: "\u4F60\u7AD9\u5728\u65E7\u68A6\u7684\u8FB9\u7F18\uFF0C\u7EC8\u4E8E\u8BA4\u51FA\u90A3\u4EFD\u75B2\u60EB\u4E0D\u662F\u9884\u611F\uFF0C\u800C\u662F\u4E00\u6B21\u5DEE\u70B9\u91CD\u6F14\u7684\u7ECF\u5386\u3002"
+      },
+      ruin: {
+        family: "\u624B\u673A\u91CC\u90A3\u4E9B\u6CA1\u70B9\u5F00\u7684\u5934\u50CF\u8FD8\u4EAE\u7740\uFF0C\u800C\u4F60\u6BD4\u4EFB\u4F55\u65F6\u5019\u90FD\u66F4\u6E05\u695A\uFF0C\u81EA\u5DF1\u521A\u521A\u53C8\u628A\u8C01\u7559\u5728\u4E86\u5916\u9762\u3002",
+        work: "\u684C\u9762\u4E0A\u7684\u5DE5\u4F5C\u7A97\u53E3\u8FD8\u5F00\u7740\uFF0C\u8FDB\u5EA6\u6761\u548C\u7EA2\u6309\u94AE\u4E00\u8D77\u4EAE\u7740\uFF0C\u50CF\u4E24\u79CD\u4F60\u90FD\u6CA1\u771F\u6B63\u9762\u5BF9\u8FC7\u7684\u4E1C\u897F\u3002",
+        debt: "\u8D26\u5355\u6CA1\u6709\u53D8\u8F7B\uFF0C\u53EA\u662F\u548C\u90A3\u4E00\u4E0B\u5FC3\u8DF3\u4E00\u8D77\uFF0C\u88AB\u4F60\u6682\u65F6\u585E\u8FDB\u4E86\u66F4\u6DF1\u7684\u5730\u65B9\u3002",
+        alone: "\u623F\u95F4\u91CC\u53EA\u5269\u98CE\u6247\u548C\u5C4F\u5E55\u7684\u58F0\u97F3\uFF0C\u4F60\u7EC8\u4E8E\u542C\u6E05\u4E86\u90A3\u53E5\u201C\u518D\u6765\u4E00\u6B21\u201D\u662F\u600E\u4E48\u4E00\u70B9\u70B9\u957F\u6210\u65E5\u5E38\u7684\u3002"
+      },
+      delusion: {
+        family: "\u90A3\u4E9B\u4F60\u672C\u6765\u5DF2\u7ECF\u89C1\u8FC7\u4E00\u6B21\u7684\u5931\u53BB\uFF0C\u8FD9\u56DE\u8FD8\u662F\u539F\u6837\u7AD9\u5728\u95E8\u53E3\u7B49\u4F60\u3002",
+        work: "\u4F60\u8FDE\u8FD9\u573A\u5760\u843D\u90FD\u7ECF\u5386\u8FC7\u4E00\u904D\uFF0C\u5374\u8FD8\u662F\u628A\u81EA\u5DF1\u5E26\u56DE\u4E86\u540C\u4E00\u5F20\u4EAE\u7740\u5C4F\u5E55\u7684\u684C\u5B50\u524D\u3002",
+        debt: "\u4F60\u4EE5\u4E3A\u91CD\u6765\u4F1A\u7ED9\u4F60\u4E00\u6B21\u6539\u5199\u6570\u5B57\u7684\u673A\u4F1A\uFF0C\u7ED3\u679C\u53EA\u662F\u8BA9\u540C\u4E00\u7B14\u8D26\u53C8\u88AB\u62D6\u5F97\u66F4\u4E45\u4E86\u4E00\u70B9\u3002",
+        alone: "\u6700\u51B7\u7684\u4E0D\u662F\u591C\u8272\uFF0C\u800C\u662F\u4F60\u660E\u660E\u8BA4\u51FA\u4E86\u6DF1\u5751\u7684\u5F62\u72B6\uFF0C\u8FD8\u662F\u4E00\u6B65\u4E00\u6B65\u8D70\u4E86\u56DE\u53BB\u3002"
+      }
+    },
     endingStats: {
       cycles: "\u5468\u671F",
       gambles: "\u6309\u952E\u6B21\u6570",
@@ -994,24 +1033,27 @@
   }
 
   // js/gambling.js
-  function formatSegmentMessage(segment, delta, useVirtual) {
-    const abs = Math.abs(delta);
-    const id = segment.id;
+  function formatSegmentMessage(segment, delta) {
+    const amount = Math.abs(delta);
     const templates = COPY.gamble.segmentMessages;
-    if (id === "double") return templates.double(getState().virtualBalance);
-    if (id === "clear") return templates.clear(abs);
-    if (segment.effect === "cash") {
-      if (id === "small_win") return `${templates.small_win(abs)}\uFF08${segment.label}\uFF09`;
-      if (id === "mid_win") return `${templates.mid_win(abs)}\uFF08${segment.label}\uFF09`;
-      if (id === "big_win") return `${templates.big_win(abs)}\uFF08${segment.label}\uFF09`;
-      return `+\xA5${abs}\uFF08${segment.label}\uFF09`;
+    switch (segment.id) {
+      case "small_win":
+        return `${templates.small_win(amount)} \xB7 ${segment.label}`;
+      case "mid_win":
+        return `${templates.mid_win(amount)} \xB7 ${segment.label}`;
+      case "big_win":
+        return `${templates.big_win(amount)} \xB7 ${segment.label}`;
+      case "small_loss":
+        return `${templates.small_loss(amount)} \xB7 ${segment.label}`;
+      case "mid_loss":
+        return `${templates.mid_loss(amount)} \xB7 ${segment.label}`;
+      case "double":
+        return templates.double(getState().virtualBalance);
+      case "clear":
+        return templates.clear(amount);
+      default:
+        return templates.default;
     }
-    if (segment.effect === "loss") {
-      if (id === "small_loss") return `${templates.small_loss(abs)}\uFF08${segment.label}\uFF09`;
-      if (id === "mid_loss") return `${templates.mid_loss(abs)}\uFF08${segment.label}\uFF09`;
-      return `-\xA5${abs}\uFF08${segment.label}\uFF09`;
-    }
-    return templates.default;
   }
   function spinOnce(useVirtual = true) {
     const state2 = getState();
@@ -1028,7 +1070,7 @@
           addCash(gain);
         }
         delta = gain;
-        message = formatSegmentMessage(segment, gain, useVirtual);
+        message = formatSegmentMessage(segment, delta);
         break;
       }
       case "loss": {
@@ -1044,7 +1086,7 @@
           }
         }
         delta = -loss;
-        message = formatSegmentMessage(segment, -loss, useVirtual);
+        message = formatSegmentMessage(segment, delta);
         break;
       }
       case "double": {
@@ -1052,14 +1094,14 @@
         const doubled = Math.min(before * 2, 5e3);
         state2.virtualBalance = doubled;
         delta = doubled - before;
-        message = formatSegmentMessage(segment, delta, true);
+        message = formatSegmentMessage(segment, delta);
         break;
       }
       case "clear": {
         const cleared = state2.virtualBalance;
         state2.virtualBalance = 0;
         delta = -cleared;
-        message = formatSegmentMessage(segment, delta, true);
+        message = formatSegmentMessage(segment, delta);
         break;
       }
       default:
@@ -1071,20 +1113,25 @@
     const state2 = getState();
     const results = [];
     let firstNarrative = null;
+    const overallBefore = captureEconomy(state2);
     const bet = randRange(BALANCE.gamble.betCash);
     if (state2.virtualBalance >= bet) {
       addVirtual(-bet);
     } else if (state2.cash >= bet) {
       addCash(-bet);
     } else if (state2.cash + state2.virtualBalance >= bet) {
-      const fromV = state2.virtualBalance;
-      addVirtual(-fromV);
-      addCash(-(bet - fromV));
+      const fromVirtual = state2.virtualBalance;
+      addVirtual(-fromVirtual);
+      addCash(-(bet - fromVirtual));
     }
     const prevCount = state2.flags.gamble_count;
-    for (let i = 0; i < spinCount; i++) {
+    for (let i = 0; i < spinCount; i += 1) {
+      const beforeSpin = i === 0 ? overallBefore : captureEconomy(state2);
       const useVirtual = state2.virtualBalance > 0 || state2.flags.gamble_count > 0;
-      results.push(spinOnce(useVirtual));
+      const spin = spinOnce(useVirtual);
+      spin.beforeState = beforeSpin;
+      spin.afterState = captureEconomy(state2);
+      results.push(spin);
     }
     state2.flags.gamble_count += spinCount;
     state2.stats.gambleCount += spinCount;
@@ -1103,29 +1150,44 @@
       moodGained = "addiction";
       results[results.length - 1].message += COPY.gamble.addictionEcho;
     }
-    if (results.some((r) => r.delta < 0) && Math.random() < 0.15) {
+    if (results.some((result) => result.delta < 0) && Math.random() < 0.15) {
       addMood("anxiety", 1);
       if (!moodGained) moodGained = "anxiety";
     }
     if (moodGained) {
       results[results.length - 1].moodGained = moodGained;
     }
-    pushLog(`\u8D4C\u535A ${spinCount} \u6B21`);
-    return { ok: true, results, firstNarrative };
+    pushLog(`gamble ${spinCount}`);
+    return {
+      ok: true,
+      results,
+      firstNarrative,
+      beforeState: overallBefore,
+      afterState: captureEconomy(state2)
+    };
   }
   function depositToMachine(amount) {
     const state2 = getState();
-    const amt = Math.min(Math.max(0, amount), state2.cash);
-    if (amt <= 0) return { ok: false, error: COPY.gamble.depositError };
-    addCash(-amt);
-    addVirtual(amt);
+    const beforeState = captureEconomy(state2);
+    const actual = Math.min(Math.max(0, amount), state2.cash);
+    if (actual <= 0) {
+      return { ok: false, error: COPY.gamble.depositError };
+    }
+    addCash(-actual);
+    addVirtual(actual);
     state2.flags.gamble_opened = true;
-    state2.flags.machine_deposit_total = (state2.flags.machine_deposit_total || 0) + amt;
-    pushLog(`\u5B58\u5165\u673A\u5668 \xA5${amt}`);
-    return { ok: true, amount: amt };
+    state2.flags.machine_deposit_total = (state2.flags.machine_deposit_total || 0) + actual;
+    pushLog(`deposit ${actual}`);
+    return {
+      ok: true,
+      amount: actual,
+      beforeState,
+      afterState: captureEconomy(state2)
+    };
   }
   function withdrawFromMachine() {
     const state2 = getState();
+    const beforeState = captureEconomy(state2);
     if (state2.virtualBalance <= 0) {
       return { ok: false, error: COPY.gamble.withdrawError };
     }
@@ -1133,17 +1195,35 @@
       return { ok: false, error: COPY.gamble.withdrawApError };
     }
     const maxOut = randRange(BALANCE.withdraw);
-    const amt = Math.min(state2.virtualBalance, maxOut);
-    addVirtual(-amt);
-    addCash(amt);
-    pushLog(`\u4ECE\u673A\u5668\u53D6\u51FA \xA5${amt}`);
-    return { ok: true, amount: amt };
+    const actual = Math.min(state2.virtualBalance, maxOut);
+    addVirtual(-actual);
+    addCash(actual);
+    pushLog(`withdraw ${actual}`);
+    return {
+      ok: true,
+      amount: actual,
+      beforeState,
+      afterState: captureEconomy(state2)
+    };
+  }
+  function captureEconomy(state2 = getState()) {
+    const debt = Math.max(0, state2.billTotal - (state2.cash + state2.virtualBalance * BALANCE.debt.virtualWeight));
+    return {
+      cash: state2.cash,
+      virtualBalance: state2.virtualBalance,
+      debt: Math.round(debt)
+    };
   }
 
   // js/audio.js
   var STORAGE_KEY = "biean_mute";
+  var SAMPLE_RATE = 22050;
+  var FALLBACK_VOLUME = 0.9;
   var ctx = null;
   var muted = false;
+  var muteBusy = false;
+  var fallbackUrls = /* @__PURE__ */ new Map();
+  var fallbackPlayers = /* @__PURE__ */ new Set();
   function ensureCtx() {
     if (!ctx) {
       try {
@@ -1167,12 +1247,21 @@
     } catch {
     }
     updateMuteButton();
+    if (muted) {
+      fallbackPlayers.forEach((player) => {
+        try {
+          player.pause();
+          player.currentTime = 0;
+        } catch {
+        }
+      });
+      fallbackPlayers.clear();
+    }
   }
   function toggleMute() {
     setMuted(!muted);
     if (!muted) play("click");
   }
-  var muteBusy = false;
   function initAudio() {
     try {
       muted = localStorage.getItem(STORAGE_KEY) === "1";
@@ -1180,24 +1269,23 @@
       muted = false;
     }
     updateMuteButton();
-    document.addEventListener("click", (e) => {
-      if (!e.target.closest("#btn-mute")) return;
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest("#btn-mute")) return;
       if (muteBusy) return;
       muteBusy = true;
-      try {
-        ensureCtx();
-      } catch {
-      }
+      ensureCtx();
       toggleMute();
       queueMicrotask(() => {
         muteBusy = false;
       });
     });
-    document.addEventListener(
-      "click",
-      () => ensureCtx(),
-      { once: true, capture: true }
-    );
+    const unlock = () => {
+      ensureCtx();
+      warmFallbackCache();
+    };
+    document.addEventListener("click", unlock, { once: true, capture: true });
+    document.addEventListener("keydown", unlock, { once: true, capture: true });
+    document.addEventListener("touchstart", unlock, { once: true, capture: true });
   }
   function updateMuteButton() {
     const btn = document.getElementById("btn-mute");
@@ -1226,10 +1314,10 @@
     const ac = ensureCtx();
     if (!ac || muted) return;
     const t0 = ac.currentTime;
-    const bufferSize = ac.sampleRate * duration;
+    const bufferSize = Math.max(1, Math.floor(ac.sampleRate * duration));
     const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
+    for (let i = 0; i < bufferSize; i += 1) {
       data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
     }
     const src = ac.createBufferSource();
@@ -1315,17 +1403,230 @@
       tone(330, 0.08, "triangle", 0.04, 0.04);
     }
   };
+  var FALLBACK_SFX = {
+    click: [
+      { kind: "tone", freq: 880, duration: 0.06, type: "square", gain: 0.22 },
+      { kind: "tone", freq: 1200, duration: 0.04, type: "sine", gain: 0.14, delay: 0.02 }
+    ],
+    win: [
+      { kind: "tone", freq: 523, duration: 0.18, type: "sine", gain: 0.22, delay: 0 },
+      { kind: "tone", freq: 659, duration: 0.18, type: "sine", gain: 0.2, delay: 0.1 },
+      { kind: "tone", freq: 784, duration: 0.18, type: "sine", gain: 0.18, delay: 0.2 },
+      { kind: "tone", freq: 1047, duration: 0.18, type: "sine", gain: 0.16, delay: 0.3 }
+    ],
+    loss: [
+      { kind: "tone", freq: 220, duration: 0.25, type: "sawtooth", gain: 0.2 },
+      { kind: "tone", freq: 180, duration: 0.35, type: "sawtooth", gain: 0.16, delay: 0.08 },
+      { kind: "noise", duration: 0.15, gain: 0.08, delay: 0.04 }
+    ],
+    notify: [
+      { kind: "tone", freq: 660, duration: 0.08, type: "sine", gain: 0.2 },
+      { kind: "tone", freq: 880, duration: 0.12, type: "sine", gain: 0.16, delay: 0.08 }
+    ],
+    dayEnd: [
+      { kind: "tone", freq: 392, duration: 0.3, type: "triangle", gain: 0.18 },
+      { kind: "tone", freq: 294, duration: 0.5, type: "triangle", gain: 0.15, delay: 0.25 }
+    ],
+    start: [
+      { kind: "tone", freq: 262, duration: 0.16, type: "triangle", gain: 0.18, delay: 0 },
+      { kind: "tone", freq: 392, duration: 0.16, type: "triangle", gain: 0.16, delay: 0.08 },
+      { kind: "tone", freq: 523, duration: 0.16, type: "triangle", gain: 0.14, delay: 0.16 },
+      { kind: "tone", freq: 659, duration: 0.16, type: "triangle", gain: 0.12, delay: 0.24 }
+    ],
+    cardPick: [
+      { kind: "tone", freq: 740, duration: 0.06, type: "square", gain: 0.16 },
+      { kind: "tone", freq: 980, duration: 0.08, type: "triangle", gain: 0.14, delay: 0.04 }
+    ],
+    windowOpen: [
+      { kind: "tone", freq: 520, duration: 0.08, type: "square", gain: 0.14 },
+      { kind: "tone", freq: 700, duration: 0.1, type: "triangle", gain: 0.12, delay: 0.03 }
+    ],
+    windowClose: [
+      { kind: "tone", freq: 320, duration: 0.09, type: "triangle", gain: 0.14 }
+    ],
+    windowMinimize: [
+      { kind: "tone", freq: 410, duration: 0.06, type: "triangle", gain: 0.12 },
+      { kind: "tone", freq: 280, duration: 0.08, type: "triangle", gain: 0.1, delay: 0.04 }
+    ],
+    workHit: [
+      { kind: "tone", freq: 660, duration: 0.05, type: "square", gain: 0.14 }
+    ],
+    workMiss: [
+      { kind: "tone", freq: 220, duration: 0.08, type: "sawtooth", gain: 0.12 }
+    ],
+    tension: [
+      { kind: "tone", freq: 55, duration: 2.6, type: "sine", gain: 0.08, attack: 0.8, release: 0.8 }
+    ],
+    endingGood: [
+      { kind: "tone", freq: 392, duration: 0.35, type: "sine", gain: 0.18, delay: 0 },
+      { kind: "tone", freq: 494, duration: 0.35, type: "sine", gain: 0.16, delay: 0.15 },
+      { kind: "tone", freq: 587, duration: 0.35, type: "sine", gain: 0.14, delay: 0.3 },
+      { kind: "tone", freq: 784, duration: 0.35, type: "sine", gain: 0.12, delay: 0.45 }
+    ],
+    endingBad: [
+      { kind: "tone", freq: 130, duration: 0.6, type: "sawtooth", gain: 0.22 },
+      { kind: "tone", freq: 98, duration: 0.9, type: "sawtooth", gain: 0.18, delay: 0.2 },
+      { kind: "noise", duration: 0.4, gain: 0.08, delay: 0.12 }
+    ],
+    gamble: [
+      { kind: "tone", freq: 440, duration: 0.05, type: "square", gain: 0.18 },
+      { kind: "tone", freq: 330, duration: 0.08, type: "triangle", gain: 0.14, delay: 0.04 }
+    ]
+  };
   function play(name) {
     try {
-      SFX[name]?.();
+      const audioCtx = ensureCtx();
+      if (audioCtx?.state === "running") {
+        SFX[name]?.();
+        return;
+      }
+      playFallback(name);
     } catch {
+      playFallback(name);
     }
   }
   function bindButtonSounds() {
-    document.addEventListener("click", (e) => {
-      const btn = e.target.closest(".btn, .gamble-btn, .taskbar-app, .file-card");
+    document.addEventListener("click", (event) => {
+      const btn = event.target.closest(".btn, .gamble-btn, .taskbar-app, .file-card");
       if (btn && !btn.disabled) play("click");
     }, true);
+  }
+  function warmFallbackCache() {
+    ["click", "notify", "gamble"].forEach((name) => {
+      if (!fallbackUrls.has(name)) {
+        fallbackUrls.set(name, renderFallbackUrl(FALLBACK_SFX[name]));
+      }
+    });
+  }
+  function playFallback(name) {
+    if (muted || typeof Audio !== "function") return;
+    const clip = FALLBACK_SFX[name];
+    if (!clip) return;
+    let url = fallbackUrls.get(name);
+    if (!url) {
+      url = renderFallbackUrl(clip);
+      fallbackUrls.set(name, url);
+    }
+    try {
+      const player = new Audio(url);
+      player.volume = FALLBACK_VOLUME;
+      player.preload = "auto";
+      const cleanup = () => {
+        fallbackPlayers.delete(player);
+      };
+      player.addEventListener("ended", cleanup, { once: true });
+      player.addEventListener("pause", cleanup, { once: true });
+      fallbackPlayers.add(player);
+      const pending = player.play();
+      if (pending?.catch) {
+        pending.catch(cleanup);
+      }
+    } catch {
+    }
+  }
+  function renderFallbackUrl(events) {
+    const totalSeconds = events.reduce(
+      (max, event) => Math.max(max, (event.delay || 0) + event.duration),
+      0
+    ) + 0.06;
+    const sampleCount = Math.max(1, Math.ceil(totalSeconds * SAMPLE_RATE));
+    const mix = new Float32Array(sampleCount);
+    events.forEach((event) => {
+      if (event.kind === "noise") {
+        mixNoise(mix, event);
+      } else {
+        mixTone(mix, event);
+      }
+    });
+    const wav = encodeWav(mix, SAMPLE_RATE);
+    if (typeof URL !== "undefined" && typeof URL.createObjectURL === "function" && typeof Blob !== "undefined") {
+      return URL.createObjectURL(new Blob([wav], { type: "audio/wav" }));
+    }
+    return bufferToDataUrl(wav);
+  }
+  function mixTone(buffer, event) {
+    const start = Math.floor((event.delay || 0) * SAMPLE_RATE);
+    const durationSamples = Math.max(1, Math.floor(event.duration * SAMPLE_RATE));
+    const attack = Math.min(event.attack || 0.012, event.duration / 2);
+    const release = Math.min(event.release || 0.05, event.duration / 2);
+    for (let i = 0; i < durationSamples && start + i < buffer.length; i += 1) {
+      const t = i / SAMPLE_RATE;
+      const progress = i / durationSamples;
+      const freq = event.slideTo ? event.freq + (event.slideTo - event.freq) * progress : event.freq;
+      const env = envelope(t, event.duration, attack, release);
+      const sample = waveform(event.type || "sine", t * freq);
+      buffer[start + i] += sample * (event.gain || 0.12) * env;
+    }
+  }
+  function mixNoise(buffer, event) {
+    const start = Math.floor((event.delay || 0) * SAMPLE_RATE);
+    const durationSamples = Math.max(1, Math.floor(event.duration * SAMPLE_RATE));
+    const release = Math.min(event.release || 0.05, event.duration / 2);
+    for (let i = 0; i < durationSamples && start + i < buffer.length; i += 1) {
+      const t = i / SAMPLE_RATE;
+      const env = envelope(t, event.duration, 5e-3, release);
+      buffer[start + i] += (Math.random() * 2 - 1) * (event.gain || 0.08) * env;
+    }
+  }
+  function envelope(t, duration, attack, release) {
+    const fadeIn = attack > 0 ? Math.min(1, t / attack) : 1;
+    const fadeOut = release > 0 ? Math.min(1, (duration - t) / release) : 1;
+    return Math.max(0, Math.min(fadeIn, fadeOut));
+  }
+  function waveform(type, phase) {
+    const turn = phase - Math.floor(phase);
+    const sine = Math.sin(2 * Math.PI * turn);
+    switch (type) {
+      case "square":
+        return sine >= 0 ? 1 : -1;
+      case "triangle":
+        return 2 * Math.abs(2 * turn - 1) - 1;
+      case "sawtooth":
+        return 2 * turn - 1;
+      default:
+        return sine;
+    }
+  }
+  function encodeWav(floatData, sampleRate) {
+    const bytesPerSample = 2;
+    const blockAlign = bytesPerSample;
+    const byteRate = sampleRate * blockAlign;
+    const dataLength = floatData.length * bytesPerSample;
+    const buffer = new ArrayBuffer(44 + dataLength);
+    const view = new DataView(buffer);
+    writeAscii(view, 0, "RIFF");
+    view.setUint32(4, 36 + dataLength, true);
+    writeAscii(view, 8, "WAVE");
+    writeAscii(view, 12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, 16, true);
+    writeAscii(view, 36, "data");
+    view.setUint32(40, dataLength, true);
+    let offset = 44;
+    for (let i = 0; i < floatData.length; i += 1) {
+      const sample = Math.max(-1, Math.min(1, floatData[i]));
+      view.setInt16(offset, sample < 0 ? sample * 32768 : sample * 32767, true);
+      offset += 2;
+    }
+    return buffer;
+  }
+  function writeAscii(view, offset, text) {
+    for (let i = 0; i < text.length; i += 1) {
+      view.setUint8(offset + i, text.charCodeAt(i));
+    }
+  }
+  function bufferToDataUrl(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = "";
+    for (let i = 0; i < bytes.length; i += 1) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    return `data:audio/wav;base64,${btoa(binary)}`;
   }
 
   // js/work.js
@@ -1339,7 +1640,7 @@
       onComplete({ success: false, income: 0, message: COPY.work.alreadyDone });
       return;
     }
-    if (!spendAp2(1)) {
+    if (!spendAp(1)) {
       onComplete({ success: false, income: 0, message: COPY.work.noAp });
       return;
     }
@@ -1649,6 +1950,31 @@
       notPressLabel: variant.notPress
     };
   }
+  var GOOD_ENDINGS = /* @__PURE__ */ new Set(["perfect", "awaken", "stop_loss", "memory"]);
+  var BAD_ENDINGS = /* @__PURE__ */ new Set(["ruin", "delusion"]);
+  function resolveEndingCopy(endingId, state2) {
+    const base = COPY.endings?.[endingId];
+    if (!base) return null;
+    const facts = getStoryFacts(state2);
+    const contextKey = getEndingContextKey(endingId, state2, facts);
+    const bodyExtra = COPY.endingEpilogues?.[endingId]?.[contextKey] || "";
+    return bodyExtra ? { ...base, bodyExtra } : { ...base };
+  }
+  function getEndingContextKey(endingId, state2, facts) {
+    if (GOOD_ENDINGS.has(endingId)) {
+      if (facts.hasFamilyHistory) return "family";
+      if ((state2.billPaid || 0) > 0 || facts.hasBillHistory) return "debt";
+      if (facts.hasWorkHistory) return "work";
+      return "alone";
+    }
+    if (BAD_ENDINGS.has(endingId)) {
+      if (facts.hasFamilyHistory) return "family";
+      if (facts.hasWorkHistory) return "work";
+      if (facts.hasBillHistory) return "debt";
+      return "alone";
+    }
+    return "alone";
+  }
 
   // js/cards.js
   var uiCallbacks = null;
@@ -1675,6 +2001,9 @@
     if (!COPY.cycles[state2.cycle]) return;
     state2.cycleResolved = false;
     state2.flags.card_picked = null;
+    state2.story.bookmark = null;
+    state2.story.cycleStartSave = createCycleStartSave();
+    uiCallbacks.persistCycleStartSave?.(state2.story.cycleStartSave);
     uiCallbacks.openWindow("cards");
     uiCallbacks.renderCardTable(getCycleCards(), null);
     if (cycleOpening?.length) {
@@ -1898,18 +2227,25 @@
       const deposit = depositToMachine(Math.min(amount, getState().cash));
       if (!deposit.ok) {
         await uiCallbacks.narrate(COPY.gamble.depositError);
+      } else {
+        uiCallbacks.setGambleLog(COPY.gamble.depositOk(deposit.amount));
+        uiCallbacks.showGambleDelta?.({
+          title: "\u7B79\u7801\u5DF2\u5B58\u5165",
+          before: deposit.beforeState,
+          after: deposit.afterState
+        });
       }
       uiCallbacks.updateHUD();
       await uiCallbacks.narrate(branch.assetThought);
       await uiCallbacks.narrateSequential(branch.gambleReady);
       saveBookmark("c1_first_choice");
-      const first = await uiCallbacks.showChoices(
-        [
-          { id: "try", label: branch.firstChoice.try, primary: true },
+      const first = await showRedButtonChoice({
+        prompt: branch.firstChoice.prompt,
+        primaryLabel: branch.firstChoice.try,
+        altChoices: [
           { id: "rules", label: branch.firstChoice.rules }
-        ],
-        branch.firstChoice.prompt
-      );
+        ]
+      });
       if (first === "rules") {
         await showRules(branch);
         return;
@@ -1919,17 +2255,40 @@
       storyBusy = false;
     }
   }
+  function showRedButtonChoice({
+    prompt = "",
+    buttonId = "press",
+    resolveId = buttonId,
+    primaryLabel = COPY.buttons?.gambleOnce || "\u6309\u4E00\u4E0B",
+    altChoices = []
+  } = {}) {
+    return uiCallbacks.showGambleChoice({
+      prompt,
+      buttonId,
+      resolveId,
+      primaryLabel,
+      altChoices
+    });
+  }
+  function snapshotEconomy() {
+    return {
+      cash: getState().cash,
+      virtualBalance: getState().virtualBalance,
+      debt: Math.round(getDebt())
+    };
+  }
   async function showRules(branch) {
     await uiCallbacks.narrate(`**${branch.rules.title}**`);
     await uiCallbacks.narrateSequential(branch.rules.body);
     saveBookmark("c1_after_rules");
-    const pick = await uiCallbacks.showChoices(
-      [
-        { id: "continue", label: branch.rules.continue, primary: true },
+    const pick = await showRedButtonChoice({
+      prompt: "\u770B\u5B8C\u4EE5\u540E\uFF0C\u4F60\u8FD8\u60F3\u7EE7\u7EED\u5417\uFF1F",
+      primaryLabel: branch.rules.continue,
+      altChoices: [
         { id: "quit", label: branch.rules.quit }
       ],
-      "\u770B\u5B8C\u4EE5\u540E\uFF0C\u4F60\u8FD8\u60F3\u7EE7\u7EED\u5417\uFF1F"
-    );
+      resolveId: "continue"
+    });
     if (pick === "quit") {
       await uiCallbacks.narrateSequential(branch.rulesQuit);
       await showEarlyEnding("rules_quit", "c1_after_rules");
@@ -1940,13 +2299,17 @@
   async function runPressSequence(branch) {
     await doScriptedPress(branch.press1, 50);
     saveBookmark("c1_after_press1");
-    let pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press1.again, primary: true },
-      { id: "stop", label: branch.press1.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u624B\u8FD8\u505C\u5728\u6309\u94AE\u9644\u8FD1\u3002\u8981\u7EE7\u7EED\u5417\uFF1F",
+      primaryLabel: branch.press1.again,
+      altChoices: [
+        { id: "stop", label: branch.press1.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter1);
-      await showEarlyEnding("stop_after_1", "c1_after_press1");
+      await showEarlyEnding("stop_after_1", "c1_after_press1", true);
       return;
     }
     await continueAfterPress1(branch);
@@ -1954,13 +2317,17 @@
   async function continueAfterPress1(branch) {
     await doScriptedPress(branch.press2, 80);
     saveBookmark("c1_after_press2");
-    const pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press2.again, primary: true },
-      { id: "stop", label: branch.press2.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u6570\u5B57\u8FD8\u5728\u8DF3\uFF0C\u4F60\u5DF2\u7ECF\u5F00\u59CB\u66FF\u5B83\u627E\u7406\u7531\u4E86\u3002",
+      primaryLabel: branch.press2.again,
+      altChoices: [
+        { id: "stop", label: branch.press2.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter2);
-      await showEarlyEnding("stop_after_2", "c1_after_press2");
+      await showEarlyEnding("stop_after_2", "c1_after_press2", true);
       return;
     }
     await continueAfterPress2(branch);
@@ -1968,13 +2335,17 @@
   async function continueAfterPress2(branch) {
     await doScriptedPress(branch.press3, -120);
     saveBookmark("c1_after_press3");
-    const pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press3.again, primary: true },
-      { id: "stop", label: branch.press3.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u8F93\u6389\u4EE5\u540E\uFF0C\u6309\u94AE\u53CD\u800C\u79BB\u4F60\u66F4\u8FD1\u4E86\u3002",
+      primaryLabel: branch.press3.again,
+      altChoices: [
+        { id: "stop", label: branch.press3.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter3);
-      await showEarlyEnding("stop_after_3", "c1_after_press3");
+      await showEarlyEnding("stop_after_3", "c1_after_press3", true);
       return;
     }
     await showColleagueDecision(branch);
@@ -1982,16 +2353,17 @@
   async function showColleagueDecision(branch) {
     await uiCallbacks.narrateSequential(branch.colleague);
     saveBookmark("c1_colleague");
-    const pick = await uiCallbacks.showChoices(
-      [
-        { id: "oneMore", label: branch.afterColleague.oneMore, primary: true },
+    const pick = await showRedButtonChoice({
+      prompt: branch.afterColleague.prompt,
+      primaryLabel: branch.afterColleague.oneMore,
+      altChoices: [
         { id: "quit", label: branch.afterColleague.quit }
       ],
-      branch.afterColleague.prompt
-    );
+      resolveId: "oneMore"
+    });
     if (pick === "quit") {
       await uiCallbacks.narrateSequential(branch.quitAfterColleague);
-      await showEarlyEnding("quit_colleague", "c1_colleague");
+      await showEarlyEnding("quit_colleague", "c1_colleague", true);
       return;
     }
     await uiCallbacks.narrateSequential(branch.press4.lines);
@@ -1999,6 +2371,7 @@
   }
   async function doScriptedPress(pressCopy, delta) {
     const state2 = getState();
+    const before = snapshotEconomy();
     state2.stats.gambleCount += 1;
     state2.flags.gamble_count = (state2.flags.gamble_count || 0) + 1;
     state2.flags.gamble_opened = true;
@@ -2013,6 +2386,16 @@
     }
     uiCallbacks.renderWheelResult(pressCopy.result);
     uiCallbacks.setGambleLog(pressCopy.result);
+    uiCallbacks.showGambleDelta?.({
+      title: pressCopy.result,
+      before,
+      after: snapshotEconomy(),
+      extras: delta >= 0 ? [{
+        label: "\u5FC3\u60C5",
+        text: `${COPY.mood.addiction || "\u4E0A\u763E"} +1`,
+        tone: "good"
+      }] : []
+    });
     uiCallbacks.updateHUD();
     uiCallbacks.updateGambleButtons();
     await uiCallbacks.narrateSequential(pressCopy.lines);
@@ -2024,19 +2407,24 @@
     appendMessages("chat", branch.chat);
     uiCallbacks.openWindow("gamble");
     await uiCallbacks.narrateSequential(branch.intro);
-    const choice = await uiCallbacks.showChoices(
-      [
-        { id: "press", label: branch.choices.press, primary: true },
+    const choice = await showRedButtonChoice({
+      prompt: branch.prompt,
+      primaryLabel: branch.choices.press,
+      altChoices: [
         { id: "store", label: branch.choices.store },
         { id: "close", label: branch.choices.close }
-      ],
-      branch.prompt
-    );
+      ]
+    });
     if (choice === "store") {
       const amount = Math.min(300, getState().cash);
       const result = depositToMachine(amount);
       if (result.ok) {
         uiCallbacks.setGambleLog(COPY.gamble.depositOk(result.amount));
+        uiCallbacks.showGambleDelta?.({
+          title: "\u7B79\u7801\u5DF2\u5B58\u5165",
+          before: result.beforeState,
+          after: result.afterState
+        });
         uiCallbacks.notify("\u673A\u5668", COPY.gamble.depositNotify(result.amount));
         uiCallbacks.updateHUD();
         await uiCallbacks.narrateSequential(branch.storeLines);
@@ -2134,19 +2522,22 @@
       return;
     }
     uiCallbacks.setGambleLog(COPY.gamble.depositOk(deposit.amount));
+    uiCallbacks.showGambleDelta?.({
+      title: "\u7B79\u7801\u5DF2\u5B58\u5165",
+      before: deposit.beforeState,
+      after: deposit.afterState
+    });
     uiCallbacks.updateHUD();
     await uiCallbacks.narrate(`\u4F60\u5148\u5F80\u673A\u5668\u91CC\u538B\u4E86 \xA5${deposit.amount}\u3002\u8FD9\u4E00\u6B21\u4F60\u4E0D\u60F3\u73A9\u201C\u5C0F\u6253\u5C0F\u95F9\u201D\u3002`);
-    let spinCount = 1;
-    if (getState().flags.triple_unlocked) {
-      const mode = await uiCallbacks.showChoices(
-        [
-          { id: "once", label: branch.modeChoices.once },
-          { id: "triple", label: branch.modeChoices.triple, primary: true }
-        ],
-        branch.modePrompt
-      );
-      spinCount = mode === "triple" ? 3 : 1;
-    }
+    const hasTriple = getState().flags.triple_unlocked;
+    const mode = await showRedButtonChoice({
+      prompt: branch.modePrompt,
+      buttonId: hasTriple ? "triple" : "press",
+      resolveId: hasTriple ? "triple" : "once",
+      primaryLabel: hasTriple ? branch.modeChoices.triple : branch.modeChoices.once,
+      altChoices: hasTriple ? [{ id: "once", label: branch.modeChoices.once }] : []
+    });
+    const spinCount = mode === "triple" ? 3 : 1;
     const gambleResult = await executeGamble(spinCount);
     if (gambleResult.ok) {
       await uiCallbacks.narrateSequential(gambleResult.netDelta >= 0 ? branch.afterGood : branch.afterBad);
@@ -2277,13 +2668,13 @@
     markGambleWindowSeen();
     await uiCallbacks.narrateSequential(branch.pick);
     uiCallbacks.openWindow("gamble");
-    const choice = await uiCallbacks.showChoices(
-      [
-        { id: "press", label: branch.choices.press, primary: true },
+    const choice = await showRedButtonChoice({
+      prompt: branch.prompt,
+      primaryLabel: branch.choices.press,
+      altChoices: [
         { id: "stop", label: branch.choices.stop }
-      ],
-      branch.prompt
-    );
+      ]
+    });
     if (choice === "stop") {
       await uiCallbacks.narrateSequential(branch.stopLines);
       await launchFinalDecision();
@@ -2312,6 +2703,16 @@
       netDelta += spin.delta;
       uiCallbacks.renderWheelResult(spin.segment.label);
       uiCallbacks.setGambleLog(spin.message);
+      uiCallbacks.showGambleDelta?.({
+        title: spin.segment.label,
+        before: spin.beforeState,
+        after: spin.afterState,
+        extras: spin.moodGained ? [{
+          label: "\u5FC3\u60C5",
+          text: `${COPY.mood[spin.moodGained] || spin.moodGained} +1`,
+          tone: spin.moodGained === "anxiety" ? "warn" : "good"
+        }] : []
+      });
       play(spin.delta >= 0 ? "win" : "loss");
       if (spin.moodGained) {
         addMoodFeedback(spin.moodGained);
@@ -2332,7 +2733,8 @@
     });
     setEnding(endingId);
     saveLastEnding(endingId);
-    uiCallbacks.showEndingScreen(endingId, COPY.endings[endingId]);
+    uiCallbacks.clearSavedRun?.();
+    uiCallbacks.showEndingScreen(endingId, resolveEndingCopy(endingId, state2) || COPY.endings[endingId]);
   }
   function appendMessages(channel, messages) {
     messages.forEach((message) => uiCallbacks.appendChat(channel, message));
@@ -2357,6 +2759,7 @@
     const snapshot = exportState();
     if (snapshot.story) {
       snapshot.story.bookmark = null;
+      snapshot.story.cycleStartSave = null;
     }
     state2.story.bookmark = {
       id,
@@ -2369,15 +2772,21 @@
     if (!ending) return;
     await uiCallbacks.narrate(COPY.cycles[1].demoEndPrompt);
     const pick = await uiCallbacks.showChoices([
-      { id: "rewind", label: COPY.narrative.choices.rewind, primary: true },
-      { id: "menu", label: COPY.narrative.choices.mainMenu },
-      ...canContinueCycle ? [{ id: "continue", label: "\u8FDB\u5165\u5468\u671F 2" }] : [{ id: "continue_line", label: COPY.narrative.choices.continueDemo }]
+      ...canContinueCycle ? [{ id: "continue", label: "\u7EE7\u7EED\u8FDB\u5165\u7B2C\u4E8C\u5468", primary: true }] : [],
+      { id: "rewind", label: COPY.narrative.choices.rewind, primary: !canContinueCycle },
+      { id: "continue_line", label: COPY.narrative.choices.continueDemo },
+      { id: "menu", label: COPY.narrative.choices.mainMenu }
     ]);
     if (pick === "rewind") {
       await rewindToBookmark(rewindBookmark);
       return;
     }
+    if (pick === "menu") {
+      location.reload();
+      return;
+    }
     if (pick === "continue" && canContinueCycle) {
+      await uiCallbacks.narrate(COPY.cycles[1].branches.friend_link.cycleEndHint);
       endCycle();
       uiCallbacks.updateHUD();
       await beginCycle();
@@ -2448,13 +2857,13 @@
     uiCallbacks.openWindow("gamble");
   }
   async function resumeCycle1FirstChoice(branch) {
-    const first = await uiCallbacks.showChoices(
-      [
-        { id: "try", label: branch.firstChoice.try, primary: true },
+    const first = await showRedButtonChoice({
+      prompt: branch.firstChoice.prompt,
+      primaryLabel: branch.firstChoice.try,
+      altChoices: [
         { id: "rules", label: branch.firstChoice.rules }
-      ],
-      branch.firstChoice.prompt
-    );
+      ]
+    });
     if (first === "rules") {
       await showRules(branch);
       return;
@@ -2464,13 +2873,14 @@
   async function resumeCycle1AfterRules(branch) {
     await uiCallbacks.narrate(`**${branch.rules.title}**`);
     await uiCallbacks.narrateSequential(branch.rules.body);
-    const pick = await uiCallbacks.showChoices(
-      [
-        { id: "continue", label: branch.rules.continue, primary: true },
+    const pick = await showRedButtonChoice({
+      prompt: "\u770B\u5B8C\u4EE5\u540E\uFF0C\u4F60\u8FD8\u60F3\u7EE7\u7EED\u5417\uFF1F",
+      primaryLabel: branch.rules.continue,
+      altChoices: [
         { id: "quit", label: branch.rules.quit }
       ],
-      "\u770B\u5B8C\u4EE5\u540E\uFF0C\u4F60\u8FD8\u60F3\u7EE7\u7EED\u5417\uFF1F"
-    );
+      resolveId: "continue"
+    });
     if (pick === "quit") {
       await uiCallbacks.narrateSequential(branch.rulesQuit);
       await showEarlyEnding("rules_quit", "c1_after_rules");
@@ -2482,13 +2892,17 @@
     uiCallbacks.renderWheelResult(branch.press1.result);
     uiCallbacks.setGambleLog(branch.press1.result);
     await uiCallbacks.narrateSequential(branch.press1.lines);
-    const pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press1.again, primary: true },
-      { id: "stop", label: branch.press1.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u624B\u8FD8\u505C\u5728\u6309\u94AE\u9644\u8FD1\u3002\u8981\u7EE7\u7EED\u5417\uFF1F",
+      primaryLabel: branch.press1.again,
+      altChoices: [
+        { id: "stop", label: branch.press1.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter1);
-      await showEarlyEnding("stop_after_1", "c1_after_press1");
+      await showEarlyEnding("stop_after_1", "c1_after_press1", true);
       return;
     }
     await continueAfterPress1(branch);
@@ -2497,13 +2911,17 @@
     uiCallbacks.renderWheelResult(branch.press2.result);
     uiCallbacks.setGambleLog(branch.press2.result);
     await uiCallbacks.narrateSequential(branch.press2.lines);
-    const pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press2.again, primary: true },
-      { id: "stop", label: branch.press2.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u6570\u5B57\u8FD8\u5728\u8DF3\uFF0C\u4F60\u5DF2\u7ECF\u5F00\u59CB\u66FF\u5B83\u627E\u7406\u7531\u4E86\u3002",
+      primaryLabel: branch.press2.again,
+      altChoices: [
+        { id: "stop", label: branch.press2.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter2);
-      await showEarlyEnding("stop_after_2", "c1_after_press2");
+      await showEarlyEnding("stop_after_2", "c1_after_press2", true);
       return;
     }
     await continueAfterPress2(branch);
@@ -2512,13 +2930,17 @@
     uiCallbacks.renderWheelResult(branch.press3.result);
     uiCallbacks.setGambleLog(branch.press3.result);
     await uiCallbacks.narrateSequential(branch.press3.lines);
-    const pick = await uiCallbacks.showChoices([
-      { id: "again", label: branch.press3.again, primary: true },
-      { id: "stop", label: branch.press3.stop }
-    ]);
+    const pick = await showRedButtonChoice({
+      prompt: "\u8F93\u6389\u4EE5\u540E\uFF0C\u6309\u94AE\u53CD\u800C\u79BB\u4F60\u66F4\u8FD1\u4E86\u3002",
+      primaryLabel: branch.press3.again,
+      altChoices: [
+        { id: "stop", label: branch.press3.stop }
+      ],
+      resolveId: "again"
+    });
     if (pick === "stop") {
       await uiCallbacks.narrateSequential(branch.stopAfter3);
-      await showEarlyEnding("stop_after_3", "c1_after_press3");
+      await showEarlyEnding("stop_after_3", "c1_after_press3", true);
       return;
     }
     await showColleagueDecision(branch);
@@ -2526,16 +2948,17 @@
   async function resumeCycle1Colleague(branch) {
     await uiCallbacks.narrateSequential(branch.colleague);
     saveBookmark("c1_colleague");
-    const pick = await uiCallbacks.showChoices(
-      [
-        { id: "oneMore", label: branch.afterColleague.oneMore, primary: true },
+    const pick = await showRedButtonChoice({
+      prompt: branch.afterColleague.prompt,
+      primaryLabel: branch.afterColleague.oneMore,
+      altChoices: [
         { id: "quit", label: branch.afterColleague.quit }
       ],
-      branch.afterColleague.prompt
-    );
+      resolveId: "oneMore"
+    });
     if (pick === "quit") {
       await uiCallbacks.narrateSequential(branch.quitAfterColleague);
-      await showEarlyEnding("quit_colleague", "c1_colleague");
+      await showEarlyEnding("quit_colleague", "c1_colleague", true);
       return;
     }
     await uiCallbacks.narrateSequential(branch.press4.lines);
@@ -2580,12 +3003,23 @@
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+  function createCycleStartSave() {
+    const snapshot = exportState();
+    snapshot.cycleResolved = false;
+    snapshot.flags.card_picked = null;
+    if (snapshot.story) {
+      snapshot.story.bookmark = null;
+      snapshot.story.cycleStartSave = null;
+    }
+    return snapshot;
+  }
 
   // js/ui.js
   var clockInterval = null;
   var windowStack = 20;
   var uiCallbacks2 = null;
   var windowMinimized = {};
+  var activeGambleChoice = null;
   var MOOD_ART = {
     addiction: "assets/pixel/mood-addiction.png",
     stable: "assets/pixel/mood-stable.png",
@@ -2597,7 +3031,7 @@
     "\u5C0F\u96C5": "assets/pixel/avatar-wife.png",
     "\u6735\u6735": "assets/pixel/avatar-daughter.png"
   };
-  var BAD_ENDINGS = /* @__PURE__ */ new Set(["ruin", "delusion", "phone_dead"]);
+  var BAD_ENDINGS2 = /* @__PURE__ */ new Set(["ruin", "delusion", "phone_dead"]);
   var ENDING_ART = {
     awaken: "assets/pixel/ending-awaken.png",
     bad: "assets/pixel/ending-ruin.png"
@@ -2789,19 +3223,28 @@
     const gambleBtn = document.getElementById("btn-gamble-once");
     const tripleBtn = document.getElementById("btn-triple");
     const tenBtn = document.getElementById("btn-ten");
+    const depositBtn = document.getElementById("btn-deposit-all");
+    const withdrawBtn = document.getElementById("btn-withdraw");
     const endBtn = document.getElementById("btn-end-cycle");
+    const armedChoice = activeGambleChoice?.buttonId || null;
+    const storyArmed = Boolean(armedChoice);
     if (gambleBtn) {
-      gambleBtn.disabled = !canAct();
+      gambleBtn.disabled = storyArmed ? armedChoice !== "press" : !canAct();
       gambleBtn.classList.toggle("hidden", s.stats.gambleCount < 0);
+      gambleBtn.classList.toggle("gamble-btn-armed", storyArmed && armedChoice === "press");
     }
     if (tripleBtn) {
       tripleBtn.classList.toggle("hidden", !s.flags.triple_unlocked);
-      tripleBtn.disabled = !canAct();
+      tripleBtn.disabled = storyArmed ? armedChoice !== "triple" : !canAct();
+      tripleBtn.classList.toggle("gamble-btn-armed", storyArmed && armedChoice === "triple");
     }
     if (tenBtn) {
       tenBtn.classList.toggle("hidden", !s.flags.ten_unlocked);
-      tenBtn.disabled = !canAct();
+      tenBtn.disabled = storyArmed ? armedChoice !== "ten" : !canAct();
+      tenBtn.classList.toggle("gamble-btn-armed", storyArmed && armedChoice === "ten");
     }
+    if (depositBtn) depositBtn.disabled = storyArmed || !canAct();
+    if (withdrawBtn) withdrawBtn.disabled = storyArmed || !canAct();
     if (endBtn) endBtn.disabled = !canAct();
   }
   function showNotification(title, body) {
@@ -2881,6 +3324,65 @@
         });
         area.appendChild(btn);
       });
+    });
+  }
+  function isGambleChoiceActive() {
+    return Boolean(activeGambleChoice);
+  }
+  function triggerGambleChoice(id = "press") {
+    if (!activeGambleChoice?.finish) return false;
+    if (id !== activeGambleChoice.buttonId) {
+      return true;
+    }
+    activeGambleChoice.finish(activeGambleChoice.resolveId);
+    return true;
+  }
+  function clearGambleChoice() {
+    activeGambleChoice = null;
+    const prompt = document.getElementById("gamble-story-prompt");
+    if (prompt) {
+      prompt.classList.add("hidden");
+      prompt.innerHTML = "";
+    }
+    updateGambleButtons();
+  }
+  function showGambleChoice({
+    prompt = "",
+    buttonId = "press",
+    resolveId = buttonId,
+    primaryLabel = COPY.buttons.gambleOnce,
+    altChoices = []
+  } = {}) {
+    return new Promise((resolve) => {
+      clearGambleChoice();
+      document.getElementById("narrative-choices")?.replaceChildren();
+      openWindow("gamble");
+      const panel = document.getElementById("gamble-story-prompt");
+      const finish = (choiceId) => {
+        clearGambleChoice();
+        resolve(choiceId);
+      };
+      activeGambleChoice = { buttonId, resolveId, finish };
+      if (panel) {
+        panel.classList.remove("hidden");
+        panel.innerHTML = `
+        <div class="gamble-story-copy">
+          <strong>\u76F4\u63A5\u70B9\u6309\u94AE\uFF1A${escapeHtml(primaryLabel)}</strong>
+          ${prompt ? `<p>${escapeHtml(prompt)}</p>` : ""}
+        </div>
+        <div class="gamble-story-actions">
+          ${altChoices.map((choice) => `
+            <button type="button" class="btn ${choice.primary ? "btn-primary" : "btn-ghost"} btn-sm" data-choice-id="${escapeHtml(choice.id)}">
+              ${escapeHtml(choice.label)}
+            </button>
+          `).join("")}
+        </div>
+      `;
+        panel.querySelectorAll("[data-choice-id]").forEach((button) => {
+          button.addEventListener("click", () => finish(button.dataset.choiceId || ""));
+        });
+      }
+      updateGambleButtons();
     });
   }
   function setNarrativeChoices(choices) {
@@ -3119,10 +3621,12 @@
     if (list) list.innerHTML = "";
   }
   function resetTransientView() {
+    clearGambleChoice();
     document.getElementById("narrative-text")?.replaceChildren();
     document.getElementById("narrative-choices")?.replaceChildren();
     document.getElementById("notifications")?.replaceChildren();
     document.getElementById("gamble-log")?.replaceChildren();
+    clearGambleDelta();
     const wheel = document.getElementById("wheel-display");
     if (wheel) {
       wheel.textContent = "\u2014";
@@ -3146,16 +3650,17 @@
     const s = getState();
     const layer = document.getElementById("ending-layer");
     layer.classList.remove("hidden");
-    play(BAD_ENDINGS.has(endingId) ? "endingBad" : "endingGood");
+    play(BAD_ENDINGS2.has(endingId) ? "endingBad" : "endingGood");
     const stats = COPY.endingStats;
-    const tone2 = BAD_ENDINGS.has(endingId) ? "bad" : "good";
-    const art = BAD_ENDINGS.has(endingId) ? ENDING_ART.bad : ENDING_ART.awaken;
+    const tone2 = BAD_ENDINGS2.has(endingId) ? "bad" : "good";
+    const art = BAD_ENDINGS2.has(endingId) ? ENDING_ART.bad : ENDING_ART.awaken;
     layer.innerHTML = `
     <div class="ending-screen pixel-border ending-${tone2}">
       <div class="ending-art pixel-border" style="background-image:url('${art}')"></div>
       ${e.achievement ? `<p class="achievement">${escapeHtml(e.achievement)}</p>` : ""}
       <h1>${escapeHtml(e.title)}</h1>
       <p class="ending-body">${escapeHtml(e.body)}</p>
+      ${e.bodyExtra ? `<p class="ending-body ending-body-secondary">${escapeHtml(e.bodyExtra)}</p>` : ""}
       <div class="ending-stats">
         <span>${stats.cycles} <strong>${s.cycle}</strong></span>
         <span>${stats.gambles} <strong>${s.stats.gambleCount}</strong></span>
@@ -3163,11 +3668,17 @@
         <span>${stats.virtual} <strong>\xA5${s.virtualBalance}</strong></span>
         <span>${stats.debt} <strong>\xA5${Math.round(getDebt())}</strong></span>
       </div>
-      <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+      <div class="ending-actions">
+        <button type="button" class="btn btn-primary" id="btn-restart">${COPY.buttons.restart}</button>
+        <button type="button" class="btn btn-ghost" id="btn-menu">${COPY.buttons.menu}</button>
+      </div>
     </div>
   `;
     layer.querySelector("#btn-restart")?.addEventListener("click", () => {
       localStorage.removeItem("biean_save");
+      location.reload();
+    });
+    layer.querySelector("#btn-menu")?.addEventListener("click", () => {
       location.reload();
     });
   }
@@ -3182,6 +3693,48 @@
     el.appendChild(p);
     el.scrollTop = el.scrollHeight;
   }
+  function clearGambleDelta() {
+    const el = document.getElementById("gamble-impact");
+    if (!el) return;
+    el.classList.add("hidden");
+    el.innerHTML = "";
+  }
+  function showGambleDelta({ title = "\u672C\u6B21\u53D8\u5316", before = null, after = null, extras = [] } = {}) {
+    const el = document.getElementById("gamble-impact");
+    if (!el) return;
+    const chips = [];
+    if (before && after) {
+      pushDeltaChip(chips, "\u73B0\u91D1", (after.cash || 0) - (before.cash || 0));
+      pushDeltaChip(chips, "\u673A\u5668", (after.virtualBalance || 0) - (before.virtualBalance || 0));
+      pushDeltaChip(chips, "\u5F85\u8FD8", (after.debt || 0) - (before.debt || 0), true);
+    }
+    extras.forEach((extra) => {
+      if (!extra?.text) return;
+      chips.push({
+        label: extra.label || "\u72B6\u6001",
+        text: extra.text,
+        tone: extra.tone || "warn"
+      });
+    });
+    if (!chips.length) {
+      clearGambleDelta();
+      return;
+    }
+    el.classList.remove("hidden");
+    el.innerHTML = `
+    <div class="gamble-impact-title">${escapeHtml(title)}</div>
+    <div class="gamble-impact-chips">
+      ${chips.map((chip) => `
+        <span class="gamble-impact-chip ${escapeHtml(chip.tone)}">
+          <strong>${escapeHtml(chip.label)}</strong>${escapeHtml(chip.text)}
+        </span>
+      `).join("")}
+    </div>
+  `;
+    el.classList.remove("gamble-impact-flash");
+    void el.offsetWidth;
+    el.classList.add("gamble-impact-flash");
+  }
   function renderWheelResult(label) {
     const wheel = document.getElementById("wheel-display");
     if (!wheel) return;
@@ -3191,6 +3744,16 @@
   }
   function sleep2(ms) {
     return new Promise((r) => setTimeout(r, ms));
+  }
+  function pushDeltaChip(target, label, delta, reverseTone = false) {
+    if (!delta) return;
+    const tone2 = reverseTone ? delta < 0 ? "good" : "bad" : delta > 0 ? "good" : "bad";
+    const prefix = delta > 0 ? "+" : "-";
+    target.push({
+      label,
+      text: `${prefix}\xA5${Math.abs(delta)}`,
+      tone: tone2
+    });
   }
   function positionWindow(win) {
     const container = document.getElementById("windows-container");
@@ -3245,8 +3808,12 @@
       resetTransientView,
       showTextEntry,
       showFinalDecision,
+      showGambleChoice,
+      showGambleDelta,
       getWorkArea: () => document.getElementById("work-area"),
       notify: showNotification,
+      persistCycleStartSave,
+      clearSavedRun,
       onCycleComplete: () => {
         play("dayEnd");
       }
@@ -3296,8 +3863,16 @@
   }
   function saveGame() {
     try {
-      if (getState().phase === "playing") {
-        localStorage.setItem(SAVE_KEY, JSON.stringify(exportState()));
+      if (getState().phase === "playing" && getState().story?.cycleStartSave) {
+        persistCycleStartSave(getState().story.cycleStartSave);
+      }
+    } catch {
+    }
+  }
+  function persistCycleStartSave(snapshot = getState().story?.cycleStartSave) {
+    try {
+      if (snapshot) {
+        localStorage.setItem(SAVE_KEY, JSON.stringify(snapshot));
       }
     } catch {
     }
@@ -3346,9 +3921,18 @@
     beginCycle();
   }
   function bindGambleUI() {
-    document.getElementById("btn-gamble-once")?.addEventListener("click", () => doGamble(1));
-    document.getElementById("btn-triple")?.addEventListener("click", () => doGamble(3));
-    document.getElementById("btn-ten")?.addEventListener("click", () => doGamble(10));
+    document.getElementById("btn-gamble-once")?.addEventListener("click", () => {
+      if (triggerGambleChoice("press")) return;
+      doGamble(1);
+    });
+    document.getElementById("btn-triple")?.addEventListener("click", () => {
+      if (triggerGambleChoice("triple")) return;
+      doGamble(3);
+    });
+    document.getElementById("btn-ten")?.addEventListener("click", () => {
+      if (triggerGambleChoice("ten")) return;
+      doGamble(10);
+    });
   }
   async function doGamble(spinCount) {
     if (isStoryBusy()) return;
@@ -3383,6 +3967,16 @@
     for (const r of result.results) {
       renderWheelResult(r.segment.label);
       setGambleLog(r.message);
+      showGambleDelta({
+        title: r.segment.label,
+        before: r.beforeState,
+        after: r.afterState,
+        extras: r.moodGained ? [{
+          label: "\u5FC3\u60C5",
+          text: `${COPY.mood[r.moodGained] || r.moodGained} +1`,
+          tone: r.moodGained === "anxiety" ? "warn" : "good"
+        }] : []
+      });
       play(r.delta >= 0 ? "win" : "loss");
       if (r.moodGained) {
         flashMood(r.moodGained);
@@ -3413,10 +4007,17 @@
   }
   function bindDepositUI() {
     document.getElementById("btn-deposit-all")?.addEventListener("click", () => {
+      if (isGambleChoiceActive()) return;
       const s = getState();
+      const before = snapshotEconomy2();
       const r = depositToMachine(s.cash);
       if (r.ok) {
         setGambleLog(COPY.gamble.depositOk(r.amount));
+        showGambleDelta({
+          title: "\u7B79\u7801\u5DF2\u5B58\u5165",
+          before,
+          after: r.afterState || snapshotEconomy2()
+        });
         showNotification("\u8D4C\u535A\u673A", COPY.gamble.depositNotify(r.amount));
       } else {
         showNotification("\u8D4C\u535A\u673A", r.error);
@@ -3425,9 +4026,16 @@
       saveGame();
     });
     document.getElementById("btn-withdraw")?.addEventListener("click", () => {
+      if (isGambleChoiceActive()) return;
+      const before = snapshotEconomy2();
       const r = withdrawFromMachine();
       if (r.ok) {
         setGambleLog(COPY.gamble.withdrawOk(r.amount));
+        showGambleDelta({
+          title: "\u7B79\u7801\u5DF2\u53D6\u51FA",
+          before,
+          after: r.afterState || snapshotEconomy2()
+        });
         showNotification("\u8D4C\u535A\u673A", COPY.gamble.withdrawNotify(r.amount));
       } else {
         showNotification("\u8D4C\u535A\u673A", r.error);
@@ -3438,6 +4046,13 @@
   }
   function sleep3(ms) {
     return new Promise((r) => setTimeout(r, ms));
+  }
+  function snapshotEconomy2() {
+    return {
+      cash: getState().cash,
+      virtualBalance: getState().virtualBalance,
+      debt: Math.round(getDebt())
+    };
   }
   document.addEventListener("DOMContentLoaded", boot);
   setInterval(saveGame, 5e3);
