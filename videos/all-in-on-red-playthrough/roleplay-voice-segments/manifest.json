@@ -1,0 +1,80 @@
+{
+  "voice": "zh-CN-YunxiNeural",
+  "rate": "+8%",
+  "volume": "+35%",
+  "pitch": "+0Hz",
+  "segments": [
+    {
+      "index": 0,
+      "text": "同事半夜丢我个链接，说困了就点一下提神。我本来真就想瞄两眼。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-00.mp3",
+      "duration": 6.24
+    },
+    {
+      "index": 1,
+      "text": "结果翻到牌桌，第一张就是那文件。我当时都有点想笑，像是专门等我上钩。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-01.mp3",
+      "duration": 6.624
+    },
+    {
+      "index": 2,
+      "text": "页面一开，中间就一颗红键。先塞三百进去，我还在安慰自己，试一下而已。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-02.mp3",
+      "duration": 6.792
+    },
+    {
+      "index": 3,
+      "text": "第一下中了，第二下也中了。人一顺起来，脑子里那句“再来一下”马上就会变大声。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-03.mp3",
+      "duration": 6.888
+    },
+    {
+      "index": 4,
+      "text": "第三下开始往回掉。我嘴上骂了一句，手却还是没停。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-04.mp3",
+      "duration": 5.448
+    },
+    {
+      "index": 5,
+      "text": "第四下刚按出去，门口正好有人经过。我下意识缩了下肩，跟真干了什么亏心事一样。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-05.mp3",
+      "duration": 7.392
+    },
+    {
+      "index": 6,
+      "text": "等手机黑屏那一下，我才猛地清醒。可第二周一进来，我第一眼还是先找那个红点。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-06.mp3",
+      "duration": 6.768
+    },
+    {
+      "index": 7,
+      "text": "工单在左边，早餐图和家里的消息也挂着。我都看见了，但我先点开的，还是它。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-07.mp3",
+      "duration": 7.44
+    },
+    {
+      "index": 8,
+      "text": "又按一下。到这会儿我才承认，我不是图赢那点钱，我是图它把脑子顶空那一下。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-08.mp3",
+      "duration": 6.888
+    },
+    {
+      "index": 9,
+      "text": "第三周连三连按都开了。数字跳得越凶，我人反而越木。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-09.mp3",
+      "duration": 5.568
+    },
+    {
+      "index": 10,
+      "text": "第四周账单弹出来，我盯着待还那一栏看了半天。运气这东西，真不替人还钱。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-10.mp3",
+      "duration": 7.56
+    },
+    {
+      "index": 11,
+      "text": "到最后一夜，我还是把页面点开了。不过这回我没按。我先回消息，先回家，别的明天再说。",
+      "path": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\roleplay-voice-segments\\segment-11.mp3",
+      "duration": 8.232
+    }
+  ]
+}

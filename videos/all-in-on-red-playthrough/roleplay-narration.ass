@@ -1,0 +1,26 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 800
+ScaledBorderAndShadow: yes
+WrapStyle: 2
+YCbCr Matrix: TV.601
+
+[V4+ Styles]
+Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding
+Style: Default,Microsoft YaHei,20,&H00F0E8E8,&H00F0E8E8,&H00101820,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,2,120,120,18,1
+
+[Events]
+Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text
+Dialogue: 0,0:00:02.07,0:00:08.31,Default,,0,0,0,,同事半夜丢我个链接，说困了就点一下提\N神。我本来真就想瞄两眼。
+Dialogue: 0,0:00:09.12,0:00:15.74,Default,,0,0,0,,结果翻到牌桌，第一张就是那文件。我当\N时都有点想笑，像是专门等我上钩。
+Dialogue: 0,0:00:16.18,0:00:22.92,Default,,0,0,0,,页面一开，中间就一颗红键。先塞三百进\N去，我还在安慰自己，试一下而已。
+Dialogue: 0,0:00:23.00,0:00:29.06,Default,,0,0,0,,第一下中了，第二下也中了。人一顺起来\N，脑子里那句“再来一下”马上就会变大声。
+Dialogue: 0,0:00:29.14,0:00:33.84,Default,,0,0,0,,第三下开始往回掉。我嘴上骂了一句，手\N却还是没停。
+Dialogue: 0,0:00:33.92,0:00:41.31,Default,,0,0,0,,第四下刚按出去，门口正好有人经过。我\N下意识缩了下肩，跟真干了什么亏心事一样。
+Dialogue: 0,0:00:42.00,0:00:48.77,Default,,0,0,0,,等手机黑屏那一下，我才猛地清醒。可第\N二周一进来，我第一眼还是先找那个红点。
+Dialogue: 0,0:00:49.14,0:00:56.58,Default,,0,0,0,,工单在左边，早餐图和家里的消息也挂着\N。我都看见了，但我先点开的，还是它。
+Dialogue: 0,0:00:56.78,0:01:03.66,Default,,0,0,0,,又按一下。到这会儿我才承认，我不是图\N赢那点钱，我是图它把脑子顶空那一下。
+Dialogue: 0,0:01:04.95,0:01:10.51,Default,,0,0,0,,第三周连三连按都开了。数字跳得越凶，\N我人反而越木。
+Dialogue: 0,0:01:13.29,0:01:20.85,Default,,0,0,0,,第四周账单弹出来，我盯着待还那一栏看\N了半天。运气这东西，真不替人还钱。
+Dialogue: 0,0:01:20.94,0:01:29.17,Default,,0,0,0,,到最后一夜，我还是把页面点开了。不过\N这回我没按。我先回消息，先回家，别的明天再说。

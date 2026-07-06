@@ -1,0 +1,248 @@
+[
+  {
+    "t": 1.752,
+    "event": "cover_visible"
+  },
+  {
+    "t": 1.858,
+    "event": "unlock_click"
+  },
+  {
+    "t": 2.068,
+    "event": "audio_capture_started",
+    "ok": true
+  },
+  {
+    "t": 2.069,
+    "event": "segment_start",
+    "segmentIndex": 0,
+    "text": "同事凌晨一点甩来个链接，说困了就点一下醒醒神。我本来只想看两眼。",
+    "duration": 6.768
+  },
+  {
+    "t": 6.38,
+    "event": "click",
+    "label": "start",
+    "selector": "#btn-start"
+  },
+  {
+    "t": 9.118,
+    "event": "segment_start",
+    "segmentIndex": 1,
+    "text": "结果翻到牌桌，第一张就是那个文件。像有人早就猜到，我今晚会被它勾过去。",
+    "duration": 6.792
+  },
+  {
+    "t": 12.153,
+    "event": "click",
+    "label": "cycle1_friend_link",
+    "selector": ".event-card[data-card-id=\"friend_link\"]"
+  },
+  {
+    "t": 16.18,
+    "event": "segment_start",
+    "segmentIndex": 2,
+    "text": "网页一开就只剩一颗红键。先压三百，我还在骗自己，这只是试手气。",
+    "duration": 6.552
+  },
+  {
+    "t": 20.226,
+    "event": "choice",
+    "label": "asset_300",
+    "index": 1
+  },
+  {
+    "t": 22.995,
+    "event": "segment_start",
+    "segmentIndex": 3,
+    "text": "第一按就赢，第二按又赢。“就一下”一下子变得特别有道理。",
+    "duration": 5.16
+  },
+  {
+    "t": 24.469,
+    "event": "armed",
+    "label": "cycle1_story_click_1",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 28.24,
+    "event": "armed",
+    "label": "cycle1_story_click_2",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 29.141,
+    "event": "segment_start",
+    "segmentIndex": 4,
+    "text": "第三下开始往回吐，我皱了眉，却还是没把手挪开。",
+    "duration": 4.512
+  },
+  {
+    "t": 30.803,
+    "event": "armed",
+    "label": "cycle1_story_click_3",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 33.922,
+    "event": "segment_start",
+    "segmentIndex": 5,
+    "text": "第四下按出去的时候，门口正好有人经过。我下意识缩了下肩，像真的怕别人看见我在上头。",
+    "duration": 7.752
+  },
+  {
+    "t": 35.878,
+    "event": "armed",
+    "label": "cycle1_story_click_4",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 42.004,
+    "event": "segment_start",
+    "segmentIndex": 6,
+    "text": "等手机一黑，我才像被人扇了一下。可第二周一开始，我还是先去找那个红点。",
+    "duration": 6.6
+  },
+  {
+    "t": 43.337,
+    "event": "armed",
+    "label": "cycle1_story_click_5",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 47.835,
+    "event": "choice",
+    "label": "continue_to_cycle2",
+    "index": 0
+  },
+  {
+    "t": 49.136,
+    "event": "segment_start",
+    "segmentIndex": 7,
+    "text": "工单、早餐图、家里的消息都挂在旁边。我看见了，但我先按的还是按钮。",
+    "duration": 6.792
+  },
+  {
+    "t": 50.669,
+    "event": "click",
+    "label": "cycle2_gamble_again",
+    "selector": ".event-card[data-card-id=\"gamble_again\"]"
+  },
+  {
+    "t": 55.573,
+    "event": "armed",
+    "label": "cycle2_press",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 56.776,
+    "event": "segment_start",
+    "segmentIndex": 8,
+    "text": "再一下。到这时候我才明白，我已经不是在玩，我是在等它替我把情绪顶起来。",
+    "duration": 6.72
+  },
+  {
+    "t": 57.925,
+    "event": "click",
+    "label": "manual_extra_press",
+    "selector": "#btn-gamble-once"
+  },
+  {
+    "t": 63.746,
+    "event": "click",
+    "label": "end_cycle2",
+    "selector": "#btn-end-cycle"
+  },
+  {
+    "t": 64.946,
+    "event": "segment_start",
+    "segmentIndex": 9,
+    "text": "第三周连三连按都解锁了。数字跳得越快，我脑子里反而越安静。",
+    "duration": 6.024
+  },
+  {
+    "t": 66.286,
+    "event": "click",
+    "label": "cycle3_gamble_big",
+    "selector": ".event-card[data-card-id=\"gamble_big\"]"
+  },
+  {
+    "t": 68.493,
+    "event": "choice",
+    "label": "stake_300",
+    "index": 0
+  },
+  {
+    "t": 71.686,
+    "event": "armed",
+    "label": "cycle3_triple_press",
+    "selector": "#btn-triple"
+  },
+  {
+    "t": 73.29,
+    "event": "segment_start",
+    "segmentIndex": 10,
+    "text": "第四周账单弹出来，我第一次承认：运气从来没替人还过钱。",
+    "duration": 5.304
+  },
+  {
+    "t": 74.54,
+    "event": "click",
+    "label": "end_cycle3",
+    "selector": "#btn-end-cycle"
+  },
+  {
+    "t": 76.321,
+    "event": "click",
+    "label": "cycle4_bill_reminder",
+    "selector": ".event-card[data-card-id=\"bill_reminder\"]"
+  },
+  {
+    "t": 79.735,
+    "event": "choice",
+    "label": "pay_all",
+    "index": 1
+  },
+  {
+    "t": 80.94,
+    "event": "segment_start",
+    "segmentIndex": 11,
+    "text": "到最后一夜，我还是把页面点开了。可这次我把手收回来了。先回消息，先回生活。",
+    "duration": 7.944
+  },
+  {
+    "t": 82.188,
+    "event": "click",
+    "label": "end_cycle4",
+    "selector": "#btn-end-cycle"
+  },
+  {
+    "t": 83.786,
+    "event": "click",
+    "label": "cycle5_one_more_gamble",
+    "selector": ".event-card[data-card-id=\"one_more_gamble\"]"
+  },
+  {
+    "t": 86.385,
+    "event": "prompt",
+    "label": "stop_before_last_gamble",
+    "index": 0
+  },
+  {
+    "t": 88.891,
+    "event": "click",
+    "label": "final_not_press",
+    "selector": "#btn-final-not"
+  },
+  {
+    "t": 90.41,
+    "event": "ending_visible",
+    "endingTitle": "及时止损"
+  },
+  {
+    "t": 93.424,
+    "event": "audio_written",
+    "bytes": 160336,
+    "file": "D:\\金海豚gamejam\\videos\\all-in-on-red-playthrough\\raw\\roleplay-game-audio.webm"
+  }
+]
