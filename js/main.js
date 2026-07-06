@@ -14,6 +14,7 @@ import {
   isStoryBusy,
 } from './cards.js';
 import { COPY } from './copy.js';
+import { getEndingProgress } from './endings.js';
 import { initAudio, bindButtonSounds, play } from './audio.js';
 import {
   initUI,
@@ -51,6 +52,7 @@ function boot() {
   bindButtonSounds();
   const hasSave = tryLoadSave();
   const saveSummary = hasSave ? getSaveSummary() : null;
+  const endingProgress = getEndingProgress();
 
   initCards({
     openWindow,
@@ -105,6 +107,7 @@ function boot() {
   showIntro({
     hasSave,
     saveSummary,
+    endingProgress,
     onStart: () => startFreshRun(),
     onContinue: hasSave ? () => continueSavedRun() : null,
     onNewGame: hasSave ? () => startFreshRun() : null,

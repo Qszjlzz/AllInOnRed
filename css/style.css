@@ -675,6 +675,8 @@ html, body {
 .cover-screen {
   width: min(920px, calc(100vw - 32px));
   max-width: none;
+  max-height: calc(100vh - 24px);
+  overflow: auto;
   padding: 28px;
   background:
     radial-gradient(circle at top left, rgba(255, 68, 102, 0.14), transparent 38%),
@@ -765,6 +767,80 @@ html, body {
   font-size: 11px;
   color: var(--text-dim);
 }
+.ending-preview {
+  width: min(100%, 860px);
+  padding: 14px 16px;
+  background: rgba(15, 12, 26, 0.78);
+  text-align: left;
+}
+.ending-preview-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.ending-preview-head strong {
+  color: var(--warn);
+  font-size: 11px;
+}
+.ending-preview-head span {
+  color: var(--accent);
+  font-size: 11px;
+}
+.ending-preview-hint {
+  margin: 0 0 10px;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.ending-preview-memory {
+  margin: 0 0 12px;
+  color: var(--text);
+  font-size: 11px;
+}
+.ending-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.ending-preview-card {
+  min-height: 92px;
+  padding: 8px;
+  border: 2px solid var(--border);
+  background: rgba(30, 24, 48, 0.82);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ending-preview-card strong {
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.4;
+}
+.ending-preview-card span:last-child {
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1.45;
+}
+.ending-preview-card.locked {
+  opacity: 0.72;
+  border-style: dashed;
+}
+.ending-preview-card.tone-good {
+  border-color: rgba(93, 255, 143, 0.55);
+}
+.ending-preview-card.tone-bad {
+  border-color: rgba(255, 68, 102, 0.65);
+}
+.ending-preview-card.tone-loop {
+  border-color: rgba(110, 198, 255, 0.7);
+}
+.ending-preview-index {
+  font-family: var(--font-pixel);
+  font-size: 8px;
+  color: var(--accent);
+}
 
 .text-entry-modal,
 .final-choice-modal {
@@ -837,6 +913,11 @@ html, body {
 }
 .ending-screen h1 { font-family: var(--font-pixel); font-size: 12px; color: var(--success); }
 .ending-screen.ending-bad h1 { color: var(--danger); }
+.ending-progress {
+  margin: -4px 0 10px;
+  color: var(--accent);
+  font-size: 11px;
+}
 .achievement { color: var(--warn); font-size: 11px; margin-bottom: 8px; }
 .ending-body { text-align: left; line-height: 1.6; margin: 12px 0; font-size: 12px; }
 .ending-body-secondary {
@@ -894,4 +975,5 @@ html, body {
   .cover-hero { grid-template-columns: 1fr; gap: 12px; }
   .cover-screen { padding: 20px; }
   .save-preview-grid { grid-template-columns: 1fr; }
+  .ending-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

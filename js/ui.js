@@ -5,6 +5,7 @@ import { getState, getDebt, canAct, syncGambleUnlocks } from './state.js';
 import { COPY } from './copy.js';
 import { CYCLE_COUNT } from './cycles.js';
 import { play } from './audio.js';
+import { getEndingEntry, getEndingProgress, unlockEnding } from './endings.js';
 
 let clockInterval = null;
 let windowStack = 20;
@@ -27,11 +28,6 @@ const AVATAR_ART = {
 };
 
 const BAD_ENDINGS = new Set(['ruin', 'delusion', 'phone_dead']);
-
-const ENDING_ART = {
-  awaken: 'assets/pixel/ending-awaken.png',
-  bad: 'assets/pixel/ending-ruin.png',
-};
 
 const WINDOW_STAGGERS = [
   { x: 0, y: 0 },
@@ -483,17 +479,19 @@ export function renderCardTable(cards, pickedId) {
 export function showIntro({
   hasSave = false,
   saveSummary = null,
+  endingProgress = null,
   onStart = null,
   onContinue = null,
   onNewGame = null,
 } = {}) {
   const layer = document.getElementById('modal-layer');
+  const progress = endingProgress || getEndingProgress();
   layer.classList.remove('hidden');
   layer.innerHTML = `
     <div class="modal intro-screen cover-screen">
       <div class="cover-hero">
         <div class="intro-brand">
-          <img class="intro-icon pixel-border" src="assets/pixel/game-icon.png" alt="" onerror="this.style.display='none'"/>
+          <img class="intro-icon pixel-border" src="assets/pixel/game-icon-v2-256.png" alt="" onerror="this.style.display='none'"/>
           <h1>${escapeHtml(COPY.meta.title)}</h1>
           ${COPY.meta.titleEn ? `<p class="intro-title-en">${escapeHtml(COPY.meta.titleEn)}</p>` : ''}
           ${COPY.meta.theme ? `<p class="intro-tagline">${escapeHtml(COPY.meta.theme)}</p>` : ''}
@@ -529,6 +527,7 @@ export function showIntro({
             : `<button type="button" class="btn btn-primary" id="btn-start">${escapeHtml(COPY.intro.start)}</button>`}
         </div>
         <p class="intro-hint">${escapeHtml(hasSave ? COPY.intro.saveHint : COPY.intro.startHint)}</p>
+        ${renderEndingPreview(progress)}
       </div>
     </div>
   `;
@@ -543,6 +542,36 @@ export function showIntro({
   layer.querySelector('#btn-start')?.addEventListener('click', () => closeIntro(onStart));
   layer.querySelector('#btn-continue')?.addEventListener('click', () => closeIntro(onContinue));
   layer.querySelector('#btn-new-game')?.addEventListener('click', () => closeIntro(onNewGame));
+}
+
+function renderEndingPreview(progress) {
+  if (!progress?.total) return '';
+
+  return `
+    <div class="ending-preview pixel-border">
+      <div class="ending-preview-head">
+        <strong>结局图鉴</strong>
+        <span>${progress.unlockedCount} / ${progress.total} 已解锁</span>
+      </div>
+      <p class="ending-preview-hint">
+        ${escapeHtml(progress.hasReplayMemory
+          ? '坏结局会留下记忆，重玩时最后抉择会变得不一样。'
+          : '在不同节点停手、回头或继续，都会把故事带去不同结局。')}
+      </p>
+      ${progress.lastEndingTitle
+        ? `<p class="ending-preview-memory">最近的回响：${escapeHtml(progress.lastEndingTitle)}</p>`
+        : ''}
+      <div class="ending-preview-grid">
+        ${progress.entries.map((entry) => `
+          <div class="ending-preview-card ${entry.unlocked ? 'unlocked' : 'locked'} tone-${escapeHtml(entry.tone)}">
+            <span class="ending-preview-index">#${String(entry.index).padStart(2, '0')}</span>
+            <strong>${escapeHtml(entry.unlocked ? entry.title : '未解锁')}</strong>
+            <span>${escapeHtml(entry.unlocked ? entry.clue : '留给下一次不同的选择')}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
 }
 
 export function showTextEntry({ title, prompt, placeholder = '', initialValue = '', confirmLabel = COPY.memo.confirm }) {
@@ -722,16 +751,22 @@ export function showEndingScreen(endingId, endingCopy) {
   };
   const s = getState();
   const layer = document.getElementById('ending-layer');
+  const unlockState = unlockEnding(endingId);
+  const progress = getEndingProgress();
+  const endingEntry = getEndingEntry(endingId);
   layer.classList.remove('hidden');
 
   play(BAD_ENDINGS.has(endingId) ? 'endingBad' : 'endingGood');
 
   const stats = COPY.endingStats;
   const tone = BAD_ENDINGS.has(endingId) ? 'bad' : 'good';
-  const art = BAD_ENDINGS.has(endingId) ? ENDING_ART.bad : ENDING_ART.awaken;
+  const art = endingEntry?.art || (BAD_ENDINGS.has(endingId)
+    ? 'assets/pixel/ending-ruin.png'
+    : 'assets/pixel/ending-awaken.png');
   layer.innerHTML = `
     <div class="ending-screen pixel-border ending-${tone}">
       <div class="ending-art pixel-border" style="background-image:url('${art}')"></div>
+      <p class="ending-progress">${unlockState.isNewUnlock ? '新结局已收录 · ' : ''}结局图鉴 ${progress.unlockedCount} / ${progress.total}</p>
       ${e.achievement ? `<p class="achievement">${escapeHtml(e.achievement)}</p>` : ''}
       <h1>${escapeHtml(e.title)}</h1>
       <p class="ending-body">${escapeHtml(e.body)}</p>

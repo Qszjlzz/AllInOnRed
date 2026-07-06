@@ -985,6 +985,7 @@
 
   // js/endings.js
   var REPLAY_KEY = "biean_last_ending";
+  var UNLOCKED_ENDINGS_KEY = "biean_unlocked_endings";
   var NON_REPLAY_ENDINGS = /* @__PURE__ */ new Set([
     "perfect",
     "awaken",
@@ -996,12 +997,151 @@
     "early_family",
     "memory"
   ]);
+  var EARLY_ENDINGS = COPY.cycles?.[1]?.earlyEndings || {};
+  var ENDING_CATALOG = [
+    {
+      id: "rules_quit",
+      title: EARLY_ENDINGS.rules_quit?.title || "\u53CA\u65F6\u79BB\u5F00\u7684\u4EBA",
+      clue: "\u770B\u5B8C\u89C4\u5219\u4EE5\u540E\u7ACB\u523B\u79BB\u5F00",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "stop_after_1",
+      title: EARLY_ENDINGS.stop_after_1?.title || "\u89C1\u597D\u5C31\u6536\u7684\u4EBA",
+      clue: "\u7B2C\u4E00\u6B21\u8D62\u540E\u5C31\u505C\u624B",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "stop_after_2",
+      title: EARLY_ENDINGS.stop_after_2?.title || "\u6709\u514B\u5236\u529B\u7684\u4EBA",
+      clue: "\u7B2C\u4E8C\u6B21\u8D62\u540E\u4E3B\u52A8\u6536\u624B",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "stop_after_3",
+      title: EARLY_ENDINGS.stop_after_3?.title || "\u53CA\u65F6\u56DE\u5934\u7684\u4EBA",
+      clue: "\u7B2C\u4E00\u6B21\u8F93\u4EE5\u540E\u7ACB\u523B\u56DE\u5934",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "quit_colleague",
+      title: EARLY_ENDINGS.quit_colleague?.title || "\u6709\u4EBA\u5728\u7B49\u4F60\u56DE\u5BB6",
+      clue: "\u88AB\u540C\u4E8B\u6253\u65AD\u4EE5\u540E\u76F4\u63A5\u56DE\u5BB6",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "phone_dead",
+      title: EARLY_ENDINGS.phone_dead?.title || "\u88AB\u8FEB\u4E2D\u65AD\u7684\u4EBA",
+      clue: "\u4E00\u8DEF\u6309\u5230\u624B\u673A\u5F7B\u5E95\u6CA1\u7535",
+      tone: "bad",
+      art: "assets/pixel/ending-ruin.png"
+    },
+    {
+      id: "perfect",
+      title: COPY.endings.perfect.title,
+      clue: "\u4F4E\u503A\u52A1\u3001\u4F4E\u6309\u952E\u6B21\u6570\u5730\u56DE\u5BB6",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "awaken",
+      title: COPY.endings.awaken.title,
+      clue: "\u4E2D\u7B49\u4E8F\u7A7A\u65F6\u505C\u4F4F\u6700\u540E\u4E00\u4E0B",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "stop_loss",
+      title: COPY.endings.stop_loss.title,
+      clue: "\u9AD8\u503A\u52A1\u4E0B\u4E5F\u9009\u62E9\u53CA\u65F6\u6B62\u635F",
+      tone: "good",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "ruin",
+      title: COPY.endings.ruin.title,
+      clue: "\u7B2C\u4E00\u6B21\u5728\u6700\u540E\u771F\u7684\u6309\u4E0B\u53BB",
+      tone: "bad",
+      art: "assets/pixel/ending-ruin.png"
+    },
+    {
+      id: "memory",
+      title: COPY.endings.memory.title,
+      clue: "\u574F\u7ED3\u5C40\u4E4B\u540E\u91CD\u65B0\u5FCD\u4F4F",
+      tone: "loop",
+      art: "assets/pixel/ending-awaken.png"
+    },
+    {
+      id: "delusion",
+      title: COPY.endings.delusion.title,
+      clue: "\u574F\u7ED3\u5C40\u4E4B\u540E\u518D\u6B21\u6309\u4E0B\u53BB",
+      tone: "bad",
+      art: "assets/pixel/ending-ruin.png"
+    }
+  ];
+  var ENDING_LOOKUP = Object.fromEntries(ENDING_CATALOG.map((entry, index) => [
+    entry.id,
+    { ...entry, index: index + 1 }
+  ]));
   function getLastEnding() {
     try {
       return localStorage.getItem(REPLAY_KEY);
     } catch {
       return null;
     }
+  }
+  function getEndingEntry(id) {
+    return ENDING_LOOKUP[id] || null;
+  }
+  function getUnlockedEndings() {
+    try {
+      const raw = localStorage.getItem(UNLOCKED_ENDINGS_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((id) => ENDING_LOOKUP[id]);
+    } catch {
+      return [];
+    }
+  }
+  function unlockEnding(id) {
+    if (!ENDING_LOOKUP[id]) {
+      return { isNewUnlock: false, unlockedEndings: getUnlockedEndings() };
+    }
+    const unlocked = new Set(getUnlockedEndings());
+    const isNewUnlock = !unlocked.has(id);
+    unlocked.add(id);
+    try {
+      localStorage.setItem(UNLOCKED_ENDINGS_KEY, JSON.stringify([...unlocked]));
+    } catch {
+    }
+    return {
+      isNewUnlock,
+      unlockedEndings: [...unlocked]
+    };
+  }
+  function getEndingProgress() {
+    const unlocked = new Set(getUnlockedEndings());
+    const lastEnding = getLastEnding();
+    const lastEntry = getEndingEntry(lastEnding);
+    return {
+      total: ENDING_CATALOG.length,
+      unlockedCount: unlocked.size,
+      unlockedEndings: [...unlocked],
+      hasReplayMemory: Boolean(lastEnding && !NON_REPLAY_ENDINGS.has(lastEnding)),
+      lastEnding,
+      lastEndingTitle: lastEntry?.title || "",
+      entries: ENDING_CATALOG.map((entry, index) => ({
+        ...entry,
+        index: index + 1,
+        unlocked: unlocked.has(entry.id)
+      }))
+    };
   }
   function saveLastEnding(id) {
     if (!id || NON_REPLAY_ENDINGS.has(id)) return;
@@ -3032,10 +3172,6 @@
     "\u6735\u6735": "assets/pixel/avatar-daughter.png"
   };
   var BAD_ENDINGS2 = /* @__PURE__ */ new Set(["ruin", "delusion", "phone_dead"]);
-  var ENDING_ART = {
-    awaken: "assets/pixel/ending-awaken.png",
-    bad: "assets/pixel/ending-ruin.png"
-  };
   var WINDOW_STAGGERS = [
     { x: 0, y: 0 },
     { x: -180, y: -36 },
@@ -3435,17 +3571,19 @@
   function showIntro({
     hasSave = false,
     saveSummary = null,
+    endingProgress = null,
     onStart = null,
     onContinue = null,
     onNewGame = null
   } = {}) {
     const layer = document.getElementById("modal-layer");
+    const progress = endingProgress || getEndingProgress();
     layer.classList.remove("hidden");
     layer.innerHTML = `
     <div class="modal intro-screen cover-screen">
       <div class="cover-hero">
         <div class="intro-brand">
-          <img class="intro-icon pixel-border" src="assets/pixel/game-icon.png" alt="" onerror="this.style.display='none'"/>
+          <img class="intro-icon pixel-border" src="assets/pixel/game-icon-v2-256.png" alt="" onerror="this.style.display='none'"/>
           <h1>${escapeHtml(COPY.meta.title)}</h1>
           ${COPY.meta.titleEn ? `<p class="intro-title-en">${escapeHtml(COPY.meta.titleEn)}</p>` : ""}
           ${COPY.meta.theme ? `<p class="intro-tagline">${escapeHtml(COPY.meta.theme)}</p>` : ""}
@@ -3479,6 +3617,7 @@
             ` : `<button type="button" class="btn btn-primary" id="btn-start">${escapeHtml(COPY.intro.start)}</button>`}
         </div>
         <p class="intro-hint">${escapeHtml(hasSave ? COPY.intro.saveHint : COPY.intro.startHint)}</p>
+        ${renderEndingPreview(progress)}
       </div>
     </div>
   `;
@@ -3491,6 +3630,30 @@
     layer.querySelector("#btn-start")?.addEventListener("click", () => closeIntro(onStart));
     layer.querySelector("#btn-continue")?.addEventListener("click", () => closeIntro(onContinue));
     layer.querySelector("#btn-new-game")?.addEventListener("click", () => closeIntro(onNewGame));
+  }
+  function renderEndingPreview(progress) {
+    if (!progress?.total) return "";
+    return `
+    <div class="ending-preview pixel-border">
+      <div class="ending-preview-head">
+        <strong>\u7ED3\u5C40\u56FE\u9274</strong>
+        <span>${progress.unlockedCount} / ${progress.total} \u5DF2\u89E3\u9501</span>
+      </div>
+      <p class="ending-preview-hint">
+        ${escapeHtml(progress.hasReplayMemory ? "\u574F\u7ED3\u5C40\u4F1A\u7559\u4E0B\u8BB0\u5FC6\uFF0C\u91CD\u73A9\u65F6\u6700\u540E\u6289\u62E9\u4F1A\u53D8\u5F97\u4E0D\u4E00\u6837\u3002" : "\u5728\u4E0D\u540C\u8282\u70B9\u505C\u624B\u3001\u56DE\u5934\u6216\u7EE7\u7EED\uFF0C\u90FD\u4F1A\u628A\u6545\u4E8B\u5E26\u53BB\u4E0D\u540C\u7ED3\u5C40\u3002")}
+      </p>
+      ${progress.lastEndingTitle ? `<p class="ending-preview-memory">\u6700\u8FD1\u7684\u56DE\u54CD\uFF1A${escapeHtml(progress.lastEndingTitle)}</p>` : ""}
+      <div class="ending-preview-grid">
+        ${progress.entries.map((entry) => `
+          <div class="ending-preview-card ${entry.unlocked ? "unlocked" : "locked"} tone-${escapeHtml(entry.tone)}">
+            <span class="ending-preview-index">#${String(entry.index).padStart(2, "0")}</span>
+            <strong>${escapeHtml(entry.unlocked ? entry.title : "\u672A\u89E3\u9501")}</strong>
+            <span>${escapeHtml(entry.unlocked ? entry.clue : "\u7559\u7ED9\u4E0B\u4E00\u6B21\u4E0D\u540C\u7684\u9009\u62E9")}</span>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
   }
   function showTextEntry({ title, prompt, placeholder = "", initialValue = "", confirmLabel = COPY.memo.confirm }) {
     return new Promise((resolve) => {
@@ -3649,14 +3812,18 @@
     };
     const s = getState();
     const layer = document.getElementById("ending-layer");
+    const unlockState = unlockEnding(endingId);
+    const progress = getEndingProgress();
+    const endingEntry = getEndingEntry(endingId);
     layer.classList.remove("hidden");
     play(BAD_ENDINGS2.has(endingId) ? "endingBad" : "endingGood");
     const stats = COPY.endingStats;
     const tone2 = BAD_ENDINGS2.has(endingId) ? "bad" : "good";
-    const art = BAD_ENDINGS2.has(endingId) ? ENDING_ART.bad : ENDING_ART.awaken;
+    const art = endingEntry?.art || (BAD_ENDINGS2.has(endingId) ? "assets/pixel/ending-ruin.png" : "assets/pixel/ending-awaken.png");
     layer.innerHTML = `
     <div class="ending-screen pixel-border ending-${tone2}">
       <div class="ending-art pixel-border" style="background-image:url('${art}')"></div>
+      <p class="ending-progress">${unlockState.isNewUnlock ? "\u65B0\u7ED3\u5C40\u5DF2\u6536\u5F55 \xB7 " : ""}\u7ED3\u5C40\u56FE\u9274 ${progress.unlockedCount} / ${progress.total}</p>
       ${e.achievement ? `<p class="achievement">${escapeHtml(e.achievement)}</p>` : ""}
       <h1>${escapeHtml(e.title)}</h1>
       <p class="ending-body">${escapeHtml(e.body)}</p>
@@ -3789,6 +3956,7 @@
     bindButtonSounds();
     const hasSave = tryLoadSave();
     const saveSummary = hasSave ? getSaveSummary() : null;
+    const endingProgress = getEndingProgress();
     initCards({
       openWindow,
       narrate,
@@ -3839,6 +4007,7 @@
     showIntro({
       hasSave,
       saveSummary,
+      endingProgress,
       onStart: () => startFreshRun(),
       onContinue: hasSave ? () => continueSavedRun() : null,
       onNewGame: hasSave ? () => startFreshRun() : null

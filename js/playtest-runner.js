@@ -15,7 +15,12 @@ import { resetGame, getState, endCycle, addMood, syncGambleUnlocks, payBill } fr
 import { getCardsForCycle, CYCLE_COUNT } from './cycles.js';
 import { COPY } from './copy.js';
 import { gamble } from './gambling.js';
-import { determineFinalEnding, getDebtRatioFromState } from './endings.js';
+import {
+  determineFinalEnding,
+  getDebtRatioFromState,
+  getEndingProgress,
+  unlockEnding,
+} from './endings.js';
 import { auditStoryContinuity, resolveEndingCopy, resolveFinalDecisionCopy } from './story-logic.js';
 
 const results = [];
@@ -150,6 +155,18 @@ run('final copy: written memo uses saved note', () => {
 run('story continuity audit passes', () => {
   const issues = auditStoryContinuity();
   if (issues.length) throw new Error(issues.join('; '));
+});
+
+run('ending gallery tracks unlock progress', () => {
+  localStorage.removeItem('biean_unlocked_endings');
+  unlockEnding('rules_quit');
+  unlockEnding('ruin');
+  const progress = getEndingProgress();
+  if (progress.total < 10) throw new Error(`total ${progress.total}`);
+  if (progress.unlockedCount !== 2) throw new Error(`count ${progress.unlockedCount}`);
+  if (!progress.entries.find((entry) => entry.id === 'ruin')?.unlocked) {
+    throw new Error('ruin not unlocked');
+  }
 });
 
 run('perfect ending copy stays outcome-based', () => {

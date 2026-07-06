@@ -40,7 +40,7 @@ const FakeAudioContext = class {
   get sampleRate() { return 44100; }
 };
 
-function createBootedDom(savedState = null, replayMemory = null) {
+function createBootedDom(savedState = null, replayMemory = null, unlockedEndings = null) {
   const dom = new JSDOM(html.replace('<link rel="stylesheet" href="css/style.css" />', ''), {
     url: 'http://localhost/index.html',
     runScripts: 'outside-only',
@@ -63,6 +63,9 @@ function createBootedDom(savedState = null, replayMemory = null) {
   if (replayMemory) {
     window.localStorage.setItem('biean_last_ending', replayMemory);
   }
+  if (unlockedEndings?.length) {
+    window.localStorage.setItem('biean_unlocked_endings', JSON.stringify(unlockedEndings));
+  }
   window.AudioContext = FakeAudioContext;
   window.webkitAudioContext = FakeAudioContext;
   window.eval(bundle);
@@ -77,6 +80,8 @@ await sleep(80);
 record('Bundle loads without throw', true);
 record('Intro start button exists', !!window.document.getElementById('btn-start'));
 record('Intro cover layout exists', !!window.document.querySelector('.cover-screen'));
+record('Intro ending gallery exists', !!window.document.querySelector('.ending-preview'));
+record('Intro ending gallery renders all endings', window.document.querySelectorAll('.ending-preview-card').length >= 10);
 record('Intro button label updated', window.document.getElementById('btn-start')?.textContent?.trim() === '开始游戏');
 
 click(window.document.getElementById('btn-mute'));
@@ -175,11 +180,16 @@ window = createBootedDom(
     log: [],
   },
   'ruin',
+  ['ruin', 'rules_quit'],
 );
 
 await sleep(80);
 record('Saved run shows continue button', !!window.document.getElementById('btn-continue'));
 record('Saved run shows new game button', !!window.document.getElementById('btn-new-game'));
+record(
+  'Saved run shows ending progress summary',
+  window.document.querySelector('.ending-preview-head')?.textContent?.includes('2 /') === true,
+);
 record(
   'Saved run preview renders cycle summary',
   window.document.querySelector('.save-preview')?.textContent?.includes('第 4 周') === true,
