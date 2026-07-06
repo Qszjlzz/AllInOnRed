@@ -1,0 +1,12 @@
+{
+  "name": "biean-gamejam",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "npx --yes esbuild js/main.js --bundle --outfile=js/game.bundle.js --format=iife --target=es2020",
+    "serve": "npx --yes serve ."
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}
