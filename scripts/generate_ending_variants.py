@@ -146,7 +146,7 @@ SPECS = {
         "contrast": 1.16,
         "tint": (255, 64, 92, 18),
         "frame": (255, 76, 110, 255),
-        "icon": "game-icon-v2-256.png",
+        "icon": "game-icon.png",
         "icon_bg": (50, 18, 28, 220),
         "pips": 0,
         "scan": 10,

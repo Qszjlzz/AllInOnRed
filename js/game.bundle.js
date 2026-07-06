@@ -3583,7 +3583,7 @@
     <div class="modal intro-screen cover-screen">
       <div class="cover-hero">
         <div class="intro-brand">
-          <img class="intro-icon pixel-border" src="assets/pixel/game-icon-v2-256.png" alt="" onerror="this.style.display='none'"/>
+          <img class="intro-icon pixel-border" src="assets/pixel/game-icon.png" alt="" onerror="this.style.display='none'"/>
           <h1>${escapeHtml(COPY.meta.title)}</h1>
           ${COPY.meta.titleEn ? `<p class="intro-title-en">${escapeHtml(COPY.meta.titleEn)}</p>` : ""}
           ${COPY.meta.theme ? `<p class="intro-tagline">${escapeHtml(COPY.meta.theme)}</p>` : ""}
